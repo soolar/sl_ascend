@@ -806,22 +806,34 @@ boolean sl_voteSetup(int candidate, int first, int second)
 		return true;
 	}
 
+	string temp = visit_url("place.php?whichplace=town_right&action=townright_vote", false);
+
 	if(candidate == 0)
 	{
 		candidate = 1 + random(2);
 	}
-	while((first == 0) || (first == second))
-	{
-		first = 1 + random(4);
+
+	string[4] initiatives;
+	initiatives[0] = get_property("_voteLocal1");
+	initiatives[1] = get_property("_voteLocal2");
+	initiatives[2] = get_property("_voteLocal3");
+	initiatives[3] = get_property("_voteLocal4");
+
+	int[4] positive_choices;
+	int outindex = 0;
+	foreach it in initiatives {
+		if (!contains_text(initiatives[it], "-")) {
+			positive_choices[outindex] = it;
+			outindex += 1;
+		}
 	}
-	while((second == 0) || (first == second))
-	{
-		second = 1 + random(4);
+	if (first == 0) {
+		first = positive_choices[0];
+	}
+	if (second == 0) {
+		second = positive_choices[1];
 	}
 
-	//When using random, should we check for negative initiatives?
-
-	string temp = visit_url("place.php?whichplace=town_right&action=townright_vote", false);
 	temp = visit_url("choice.php?whichchoice=1331&pwd=&option=1&g=" + candidate + "&local[]=" + first + "&local[]=" + second);
 	return true;
 }
@@ -890,8 +902,8 @@ boolean sl_voteMonster(boolean freeMon, location loc, string option)
 
 boolean fightClubNap()
 {
-    if(!is_unrestricted($item[Boxing Day care package]))
-    {
+	if(!is_unrestricted($item[Boxing Day care package]))
+	{
 		return false;
 	}
 	if(!get_property("daycareOpen").to_boolean())
@@ -956,8 +968,8 @@ boolean fightClubSpa(effect eff)
 
 boolean fightClubSpa(int option)
 {
-    if(!is_unrestricted($item[Boxing Day care package]))
-    {
+	if(!is_unrestricted($item[Boxing Day care package]))
+	{
 		return false;
 	}
 	if(!get_property("daycareOpen").to_boolean())
