@@ -1180,6 +1180,15 @@ string sl_combatHandler(int round, string opp, string text)
 			doInstaKill = false;
 		}
 	}
+					  
+	if ($monster[ancient protector spirit] == enemy && canUse($item[scroll of ancient forbidden unspeakable evil]))
+	{
+		return useItem($item[scroll of ancient forbidden unspeakable evil]);
+	}
+	else
+	{
+		doInstaKill = false;
+	}
 
 	if(instakillable(enemy) && !isFreeMonster(enemy) && doInstaKill)
 	{
