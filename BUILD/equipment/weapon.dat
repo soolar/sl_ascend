@@ -18,6 +18,7 @@ Lead Pipe	class:Seal Clubber
 Fish Hatchet
 Bass Clarinet
 # We now resume the previous club broadcast
+Fourth of May Cosplay Saber	class:Seal Clubber	skill:Iron Palms
 Porcelain Police Baton	class:Seal Clubber
 Stainless Steel Shillelagh	class:Seal Clubber
 Frozen Seal Spine	class:Seal Clubber
@@ -61,6 +62,8 @@ revolver	mainstat:Moxie
 knife	mainstat:Moxie
 # Autohits? Yes please.
 Thor's Pliers
+# The Saber uses your highest stat for attacks
+Fourth of May Cosplay Saber
 # Nice ultra rare you got there
 The Nuge's favorite crossbow	mainstat:Moxie
 # Vampyres are a Mysticality class that sometimes can't use spells. Ugh.
