@@ -1,0 +1,14 @@
+# Items to not be crafted during the generic diet business
+# Optionally include a conditional as in sl_check_conditions
+# If no conditional, put true
+
+# Don't waste goat cheese
+fettucini Inconnu	quest:questL08Trapper<2
+
+# Don't use Xs and Os
+Hide-rox&trade; cookie	true
+jug of booze	true
+
+# Don't waste clovers
+green beer	true
+Lucky Surprise Egg	true

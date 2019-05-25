@@ -623,6 +623,173 @@ boolean canChew(item toChew)
 	return true;
 }
 
+boolean haveOrHaveIngredients(int amount, item it, int[item] alreadyUsed)
+{
+	int toMake = alreadyUsed[it] + amount - item_amount(it);
+	if(toMake <= 0)
+	{
+		// already have enough
+		return true;
+	}
+	int[item] ingredients = get_ingredients(it);
+	if(ingredients.count() == 0)
+	{
+		// need to make, but it's not creatable
+		return false;
+	}
+	string[string] creationBlacklist;
+	file_to_map("sl_ascend_consumable_creation_blacklist.txt", creationBlacklist);
+	foreach blacklistedName,blacklistedCondition in creationBlacklist
+	{
+		item blacklisted = blacklistedName.to_item();
+		if(blacklisted == $item[none])
+		{
+			abort(blacklistedName + " is not an item! (in consumable creation blacklist)");
+		}
+		if(blacklisted == it && sl_check_conditions(blacklistedCondition))
+		{
+			// it's blacklisted
+			return false;
+		}
+	}
+	foreach ing,ingAmount in ingredients
+	{
+		if(!haveOrHaveIngredients(ingAmount, ing, alreadyUsed))
+		{
+			// don't have enough of the ingredients
+			return false;
+		}
+	}
+	// can make
+	return true;
+}
+
+item getBestConsumable(int organ, int[item] alreadyUsed, int organFilled)
+{
+	item bestSoFar = $item[none];
+	float bestAdvsPerSize = 0;
+
+	foreach it in $items[]
+	{
+		int size = 0;
+		switch(organ)
+		{
+			case SL_ORGAN_STOMACHE:
+				if(it.fullness == 0 || it.inebriety > 0 || !canEat(it))
+				{
+					continue;
+				}
+				size = it.fullness;
+				if(fullness_left() - organFilled < size)
+				{
+					continue;
+				}
+				break;
+			case SL_ORGAN_LIVER:
+				if(it.inebriety == 0 || it.fullness > 0 || !canDrink(it))
+				{
+					continue;
+				}
+				if(it == $item[astral pilsner] && my_level() < 11)
+				{
+					continue;
+				}
+				size = it.inebriety;
+				if(inebriety_left() - organFilled < size)
+				{
+					continue;
+				}
+				break;
+			case SL_ORGAN_SPLEEN:
+				if(it.spleen == 0 || !canChew(it))
+				{
+					continue;
+				}
+				size = it.spleen;
+				if(spleen_left() - organFilled < size)
+				{
+					continue;
+				}
+				break;
+			default:
+				print("Received invalid organ " + organ + " to getBestConsumable", "red");
+				return $item[none];
+		}
+		if(!haveOrHaveIngredients(1, it, alreadyUsed))
+		{
+			continue;
+		}
+		string[int] advStrings = it.adventures.split_string("-");
+		float advs = advStrings[0].to_int();
+		if(advStrings.count() > 1)
+		{
+			advs += advStrings[1].to_int();
+			advs /= 2;
+		}
+		float advsPerSize = advs / size;
+		if(advsPerSize > bestAdvsPerSize)
+		{
+			bestSoFar = it;
+			bestAdvsPerSize = advsPerSize;
+		}
+	}
+
+	return bestSoFar;
+}
+
+void addToAlreadyUsed(int[item] alreadyUsed, int amount, item toAdd)
+{
+	boolean crafting = (item_amount(toAdd) < alreadyUsed[toAdd] + amount);
+	alreadyUsed[toAdd] += amount;
+	if(crafting)
+	{
+		foreach ing,ingAmount in get_ingredients(toAdd)
+		{
+			addToAlreadyUsed(alreadyUsed, ingAmount, ing);
+		}
+	}
+}
+
+item[int] getBestOrganFillings(int organ, int[item] alreadyUsed)
+{
+	item[int] result;
+	int filled = 0;
+	int toFill = 0;
+	switch(organ)
+	{
+		case SL_ORGAN_STOMACHE:
+			toFill = fullness_left();
+			break;
+		case SL_ORGAN_LIVER:
+			toFill = inebriety_left();
+			break;
+		case SL_ORGAN_SPLEEN:
+			toFill = spleen_left();
+			break;
+		default:
+			abort(organ + " is not an organ...");
+	}
+
+	while(filled < toFill)
+	{
+		item next = getBestConsumable(organ, alreadyUsed, filled);
+		if(next == $item[none])
+		{
+			break;
+		}
+		addToAlreadyUsed(alreadyUsed, 1, next);
+		filled += next.fullness + next.inebriety + next.spleen;
+		result[result.count()] = next;
+	}
+
+	return result;
+}
+
+void beta_consumeStuff()
+{
+
+}
+
 void consumeStuff()
 {
 	// grind and eat any sausage that you can
@@ -645,6 +812,12 @@ void consumeStuff()
 	if(sl_my_path() == "Community Service")
 	{
 		cs_eat_spleen();
+		return;
+	}
+
+	if(get_property("sl_beta_test").to_boolean() && in_hardcore())
+	{
+		beta_consumeStuff();
 		return;
 	}
 

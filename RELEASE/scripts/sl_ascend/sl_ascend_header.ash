@@ -1012,3 +1012,7 @@ monster[int] mobs_available();								//Defined in sl_ascend/sl_zone.ash
 item[int] drops_available();								//Defined in sl_ascend/sl_zone.ash
 item[int] hugpocket_available();							//Defined in sl_ascend/sl_zone.ash
 
+// CONSTANTS
+static int SL_ORGAN_STOMACHE = 1;
+static int SL_ORGAN_LIVER = 2;
+static int SL_ORGAN_SPLEEN = 3;
