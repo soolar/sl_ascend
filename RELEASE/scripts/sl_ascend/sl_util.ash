@@ -5144,7 +5144,7 @@ boolean sl_can_equip(item it, slot s)
 // See the switch statement for valid condition types and a description of their data
 boolean sl_check_conditions(string conds)
 {
-	if(conds == "")
+	if(conds == "" || conds == "true")
 		return true;
 
 	string [int] conditions = conds.split_string(";");
