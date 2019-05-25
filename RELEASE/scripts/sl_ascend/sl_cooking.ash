@@ -536,9 +536,14 @@ boolean canDrink(item toDrink)
 	{
 		return false;
 	}
-	if(sl_my_path() == "Dark Gyffte")
+	boolean isBloody = ($items[vampagne, dusty bottle of blood, Red Russian, mulled blood, bottle of Sanguiovese] contains toDrink);
+	if(sl_my_path() == "Dark Gyffte" && !isBloody)
 	{
-		return ($items[vampagne, dusty bottle of blood, Red Russian, mulled blood, bottle of Sanguiovese] contains toDrink);
+		return false;
+	}
+	if(isBloody && !(sl_my_path() == "Dark Gyffte"))
+	{
+		return false;
 	}
 	if(sl_my_path() == "KOLHS")
 	{
@@ -586,9 +591,14 @@ boolean canEat(item toEat)
 	{
 		return false;
 	}
-	if(sl_my_path() == "Dark Gyffte")
+	boolean isBloody = ($items[blood-soaked sponge cake, blood roll-up, blood snowcone, actual blood sausage, bloodstick] contains toEat);
+	if(sl_my_path() == "Dark Gyffte" && !isBloody)
 	{
-		return ($items[blood-soaked sponge cake, blood roll-up, blood snowcone, actual blood sausage, bloodstick] contains toEat);
+		return false;
+	}
+	if(isBloody && !(sl_my_path() == "Dark Gyffte"))
+	{
+		return false;
 	}
 
 	if(my_level() < toEat.levelreq)
