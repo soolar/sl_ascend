@@ -56,6 +56,8 @@ import <sl_ascend/sl_list.ash>
 import <sl_ascend/sl_zlib.ash>
 import <sl_ascend/sl_zone.ash>
 
+// Variable used to force the tavern
+boolean forceTavern = false;
 
 void initializeSettings()
 {
@@ -285,7 +287,7 @@ boolean handleFamiliar(string type)
 		}
 	}
 
-	if(sl_beta())
+	if(get_property("sl_beta_test").to_boolean())
 	{
 		string [string,int,string] familiars_text;
 		if(!file_to_map("sl_ascend_familiars.txt", familiars_text))
@@ -4201,7 +4203,7 @@ boolean L13_towerNSFinal()
 		equip($slot[Off-Hand], $item[Oscus\'s Garbage Can Lid]);
 	}
 
-	if(sl_beta())
+	if(get_property("sl_beta_test").to_boolean())
 	{
 		handleFamiliar("boss");
 	}
@@ -7002,6 +7004,9 @@ boolean L11_unlockEd()
 	if(get_property("sl_tavern") != "finished")
 	{
 		print("Uh oh, didn\'t do the tavern and we are at the pyramid....", "red");
+		// Force the Tavern since we need to do it anyways, and it may get us some tangles.
+		forceTavern = true;
+		L3_tavern();
 	}
 
 	print("In the pyramid (W:" + item_amount($item[crumbling wooden wheel]) + ") (R:" + item_amount($item[tomb ratchet]) + ") (U:" + get_property("controlRoomUnlock") + ")", "blue");
@@ -7433,7 +7438,7 @@ boolean L12_gremlins()
 	{
 		bat_formMist();
 	}
-	handleFamiliar(sl_beta() ? "gremlins" : "init");
+	handleFamiliar("init");
 	songboomSetting("dr");
 	if(item_amount($item[molybdenum hammer]) == 0)
 	{
@@ -8854,7 +8859,7 @@ boolean LX_freeCombats()
 		return true;
 	}
 
-	if(my_level() < 13 && godLobsterCombat())
+	if(godLobsterCombat())
 	{
 		return true;
 	}
@@ -12580,6 +12585,13 @@ boolean L9_oilPeak()
 	{
 		buffMaintain($effect[Ceaseless Snarling], 0, 1, 1);
 	}
+	// Maximize Asdon usage
+	if(((monster_level_adjustment() >= 75) && (monster_level_adjustment() <= 99)) || ((monster_level_adjustment() >= 25) && (monster_level_adjustment() <= 49)) || (monster_level_adjustment() <= 11))
+	{
+		asdonBuff($effect[Driving Recklessly]);
+	} else {
+		asdonBuff($effect[Driving Wastefully]);
+	}
 	if((monster_level_adjustment() < 60))
 	{
 		if (item_amount($item[Dress Pants]) > 0)
@@ -12599,6 +12611,10 @@ boolean L9_oilPeak()
 	if(get_property("lastAdventure") == "Unimpressed with Pressure")
 	{
 		set_property("oilPeakProgress", 0.0);
+		// Brute Force grouping with tavern (if not done) to maximize tangles while we have a high ML.
+		print("Checking to see if we should do the tavern while we are running high ML.", "green");
+		forceTavern = true;
+		L3_tavern();
 	}
 	handleFamiliar("item");
 	return true;
@@ -13888,6 +13904,12 @@ boolean sl_tavern()
 			set_property("choiceAdventure514", "1");
 		}
 
+		// Asdon usage increases Rat King chance by 8.3%
+		if(monster_level_adjustment() <= 299)
+		{
+			asdonBuff($effect[Driving Recklessly]);
+		}
+
 		tavern = get_property("tavernLayout");
 		if(tavern == "0000000000000000000000000")
 		{
@@ -14007,7 +14029,7 @@ boolean L3_tavern()
 		delayTavern = false;
 	}
 
-	if(delayTavern)
+	if((delayTavern) && (!forceTavern))
 	{
 		return false;
 	}
