@@ -146,6 +146,9 @@ boolean providePlusCombat(int amt);
 boolean providePlusNonCombat(int amt);
 boolean providePlusCombat(int amt, boolean doEquips);
 boolean providePlusNonCombat(int amt, boolean doEquips);
+boolean provideInitiative(int amt, boolean doEquips);
+boolean provideResistances(int [element] amt, boolean doEquips);
+boolean provideML(int amt, boolean doEquips);
 boolean basicAdjustML();
 boolean sl_is_valid(item it);
 boolean sl_is_valid(familiar fam);
@@ -3019,6 +3022,274 @@ boolean providePlusNonCombat(int amt, boolean doEquips)
 		asdonBuff($effect[Driving Stealthily]);
 	}
 	return true;
+}
+
+boolean provideInitiative(int amt, boolean doEquips)
+{
+	sl_debug_print("Trying to provide " + amt + " initiative, " + (doEquips ? "with" : "without") + " equipment", "blue");
+
+	float delta = 0;
+	if(doEquips)
+	{
+		if(useMaximizeToEquip())
+		{
+			addToMaximize("500initiative " + amt + "max");
+			simMaximize();
+			delta = simValue("Initiative") - numeric_modifier("Initiative");
+		}
+
+		handleFamiliar("init");
+	}
+
+	boolean pass()
+	{
+		return numeric_modifier("Initiative") + delta >= amt;
+	}
+
+	if(pass())
+		return true;
+
+	foreach eff in $effects[Cletus's Canticle of Celerity, Springy Fusilli, Soulerskates, Walberg's Dim Bulb, Song of Slowness, Your Fifteen Minutes, Suspicious Gaze, Bone Springs, Living Fast]
+	{
+		buffMaintain(eff, 0, 1, 1);
+		if(pass())
+			return true;
+	}
+
+	asdonBuff($effect[Driving Quickly]);
+	if(pass())
+		return true;
+
+	bat_formBats();
+	if(pass())
+		return true;
+
+	if(sl_have_familiar($familiar[Grim Brother]) && (have_effect($effect[Soles of Glass]) == 0) && (get_property("_grimBuff").to_boolean() == false))
+	{
+		visit_url("choice.php?pwd&whichchoice=835&option=1", true);
+		if(pass())
+			return true;
+	}
+
+	foreach eff in $effects[Adorable Lookout, Alacri Tea, All Fired Up, Fishy\, Oily, The Glistening, Human-Machine Hybrid, Patent Alacrity, Provocative Perkiness, Sepia Tan, Sugar Rush, Ticking Clock, Well-Swabbed Ear]
+	{
+		buffMaintain(eff, 0, 1, 1);
+		if(pass())
+			return true;
+	}
+
+	if(sl_sourceTerminalEnhanceLeft() > 0 && have_effect($effect[init.enh]) == 0)
+	{
+		sl_sourceTerminalEnhance("init");
+		if(pass())
+			return true;
+	}
+
+	if(amt >= 400)
+	{
+		buffMaintain($effect[Bow-Legged Swagger], 0, 1, 1);
+		if(pass())
+			return true;
+	}
+
+	return false;
+}
+
+boolean provideResistances(int [element] amt, boolean doEquips)
+{
+	string debugprint = "Trying to provide ";
+	foreach ele,goal in amt
+	{
+		debugprint += goal;
+		debugprint += " ";
+		debugprint += ele;
+		debugprint += " resistance, ";
+	}
+	debugprint += (doEquips ? "with equipment" : "without equipment");
+	sl_debug_print(debugprint, "blue");
+
+	int [element] delta;
+
+	boolean pass(element ele)
+	{
+		return numeric_modifier(ele + " Resistance") + delta[ele] >= amt[ele];
+	}
+
+	boolean pass()
+	{
+		foreach ele in amt
+		{
+			if(!pass(ele))
+				return false;
+		}
+		return true;
+	}
+
+	if(doEquips)
+	{
+		if(useMaximizeToEquip())
+		{
+			foreach ele,goal in amt
+			{
+				addToMaximize("2000" + ele + " resistance " + goal + "max");
+			}
+			simMaximize();
+			foreach ele in amt
+			{
+				delta[ele] = simValue(ele + " Resistance") - numeric_modifier(ele + " Resistance");
+			}
+		}
+	}
+	if(pass())
+		return true;
+
+	boolean tryEffects(boolean [effect] effects)
+	{
+		foreach eff in effects
+		{
+			buffMaintain(eff, 0, 1, 1);
+			if(pass())
+				return true;
+		}
+		return false;
+	}
+
+	boolean buffElement(element ele, boolean [effect] effects)
+	{
+		if(!pass(ele))
+		{
+			foreach eff in effects
+			{
+				buffMaintain(eff, 0, 1, 1);
+				if(pass(ele))
+					return true;
+			}
+			return false;
+		}
+		return true;
+	}
+
+	// effects from skills
+	if(tryEffects($effects[Elemental Saucesphere, Astral Shell, Hide of Sobek, Spectral Awareness]))
+		return true;
+
+	buffElement($element[cold], $effects[Scarysauce]);
+	buffElement($element[sleaze], $effects[Scarysauce]);
+	if(pass())
+		return true;
+
+	bat_formMist();
+	if(pass())
+		return true;
+
+	if(doEquips && !is100FamiliarRun())
+	{
+		familiar resfam = $familiar[none];
+		foreach fam in $familiars[Trick-or-Treating Tot, Mu, Exotic Parrot]
+		{
+			if(sl_have_familiar(fam))
+			{
+				resfam = fam;
+				break;
+			}
+		}
+		if(resfam != $familiar[none])
+		{
+			// need to use now so maximizer will see it
+			use_familiar(resfam);
+			handleFamiliar(resfam);
+			if(useMaximizeToEquip())
+			{
+				// update maximizer scores with familiar
+				simMaximize();
+				foreach ele in amt
+				{
+					delta[ele] = simValue(ele + " Resistance") - numeric_modifier(ele + " Resistance");
+				}
+			}
+		}
+		if(pass())
+			return true;
+	}
+
+	if(doEquips)
+	{
+		// effects from items that we'd have to buy or have found
+		if(tryEffects($effects[Red Door Syndrome, Well-Oiled, Oiled-Up]))
+			return true;
+
+		// element specific effects
+		buffElement($element[hot], $effects[Flame-Retardant Trousers, Fireproof Lips]);
+		buffElement($element[cold], $effects[Insulated Trousers, Fever From the Flavor]);
+		buffElement($element[stench], $effects[Smelly Pants, Neutered Nostrils, Can't Smell Nothin']);
+		buffElement($element[spooky], $effects[Spookypants, Balls of Ectoplasm, Hyphemariffic]);
+		buffElement($element[sleaze], $effects[Sleaze-Resistant Trousers, Hyperoffended]);
+	}
+
+	return pass();
+}
+
+boolean provideML(int amt, boolean doEquips)
+{
+	sl_debug_print("Trying to provide " + amt + " ML, " + (doEquips ? "with" : "without") + " equipment", "blue");
+	if(doEquips)
+	{
+		// so we can fill in the rest afterwards, to avoid giving up early due to barely going over 150
+		sl_change_mcd(0);
+	}
+	float delta = 0;
+	if(doEquips)
+	{
+		if(useMaximizeToEquip())
+		{
+			addToMaximize("200ml " + amt + "max");
+			simMaximize();
+			delta = simValue("Monster Level") - numeric_modifier("Monster Level");
+		}
+	}
+
+	boolean pass()
+	{
+		return numeric_modifier("Monster Level") + delta >= amt;
+	}
+
+	boolean finish()
+	{
+		if(doEquips)
+		{
+			int adjustTo = max(min(150 - to_int(numeric_modifier("Monster Level") + delta), 11), 0);
+			sl_change_mcd(adjustTo);
+		}
+		return pass();
+	}
+
+	if(pass())
+		return finish();
+
+	boolean tryEffects(boolean [effect] effects)
+	{
+		foreach eff in effects
+		{
+			if(numeric_modifier("Monster Level") + delta + numeric_modifier(eff, "Monster Level") <= 150)
+			{
+				buffMaintain(eff, 0, 1, 1);
+				if(pass())
+					return true;
+			}
+		}
+		return false;
+	}
+
+	if(tryEffects($effects[Ur-Kel's Aria of Annoyance, Drescher's Annoying Noise, Pride of the Puffin, Ceaseless Snarling, Punchable Face]))
+		return finish();
+
+	if(doEquips)
+	{
+		if(tryEffects($effects[Litterbug, Tortious, Sweetbreads Flamb&eacute;, The Dinsey Look]))
+			return finish();
+	}
+
+	return finish();
 }
 
 boolean sl_have_familiar(familiar fam)

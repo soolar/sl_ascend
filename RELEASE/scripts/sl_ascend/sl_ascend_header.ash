@@ -801,7 +801,10 @@ boolean providePlusCombat(int amt, boolean doEquips);		//Defined in sl_ascend/sl
 boolean providePlusNonCombat(int amt);						//Defined in sl_ascend/sl_util.ash
 boolean providePlusNonCombat(int amt, boolean doEquips);	//Defined in sl_ascend/sl_util.ash
 boolean acquireCombatMods(int amt);							//Defined in sl_ascend/sl_util.ash
-boolean acquireCombatMods(int amt, boolean doEquips);		//Defined in sl_ascend/sl_util.ash
+boolean acquireCombatMods(int amt, boolean doEquips); //Defined in sl_ascend/sl_util.ash
+boolean provideInitiative(int amt, boolean doEquips); //Defined in sl_ascend/sl_util.ash
+boolean provideResistances(int [element] amt, boolean doEquips); //Defined in sl_ascend/sl_util.ash
+boolean provideML(int amt, boolean doEquips); //Defined in sl_ascend/sl_util.ash
 void pullAll(item it);										//Defined in sl_ascend/sl_util.ash
 void pullAndUse(item it, int uses);							//Defined in sl_ascend/sl_util.ash
 boolean pullXWhenHaveY(item it, int howMany, int whenHave);	//Defined in sl_ascend/sl_util.ash

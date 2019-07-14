@@ -4858,18 +4858,8 @@ boolean L13_towerNSContests()
 				{
 					doRest();
 				}
-				foreach eff in $effects[Adorable Lookout, Alacri Tea, All Fired Up, Bone Springs, Bow-Legged Swagger, Fishy\, Oily, The Glistening, Human-Machine Hybrid, Patent Alacrity, Provocative Perkiness, Sepia Tan, Sugar Rush, Ticking Clock, Well-Swabbed Ear, Your Fifteen Minutes]
-				{
-					buffMaintain(eff, 0, 1, 1);
-				}
 
-				buffMaintain($effect[Cletus\'s Canticle of Celerity], 10, 1, 1);
-				buffMaintain($effect[Suspicious Gaze], 10, 1, 1);
-				buffMaintain($effect[Springy Fusilli], 10, 1, 1);
-				buffMaintain($effect[Walberg\'s Dim Bulb], 5, 1, 1);
-				buffMaintain($effect[Song of Slowness], 100, 1, 1);
-				buffMaintain($effect[Soulerskates], 0, 1, 1);
-				asdonBuff($effect[Driving Quickly]);
+				provideInitiative(400, true);
 
 				if(is100FamiliarRun())
 				{
@@ -4880,8 +4870,6 @@ boolean L13_towerNSContests()
 					slMaximize("init, switch xiblaxian holo-companion, switch oily woim, switch happy medium,switch cute meteor", 1500, 0, false);
 					handleFamiliar(my_familiar());
 				}
-
-				bat_formBats();
 
 				cli_execute("presool");
 				break;
@@ -6632,8 +6620,9 @@ boolean L11_mauriceSpookyraven()
 		{
 			useCocoon();
 		}
-		buffMaintain($effect[Astral Shell], 10, 1, 1);
-		buffMaintain($effect[Elemental Saucesphere], 10, 1, 1);
+		// without doEquips set to false this will only do things that can be done for "free"
+		int [element] reqs = { $element[cold]: 10, $element[hot]: 10, $element[spooky]: 10, $element[sleaze]: 10, $element[stench]: 10 };
+		provideResistances(reqs, false);
 
 
 		# The slAdvBypass case is probably suitable for Ed but we'd need to verify it.
@@ -6806,12 +6795,7 @@ boolean L11_mauriceSpookyraven()
 			abort("Unstable Fulminate was not equipped. Please report this and include the following: Equipped items and if you have or don't have an Unstable Fulminate. For now, get the wine bomb manually, and run again.");
 		}
 
-		if(monster_level_adjustment() < 57)
-		{
-			buffMaintain($effect[Sweetbreads Flamb&eacute;], 0, 1, 1);
-		}
-
-		addToMaximize("100ml 82max");
+		provideML(82, true);
 
 		slAdv(1, $location[The Haunted Boiler Room]);
 
@@ -9207,50 +9191,17 @@ boolean L7_crypt()
 
 	if((get_property("cyrptAlcoveEvilness").to_int() > 0) && ((get_property("cyrptAlcoveEvilness").to_int() <= get_property("sl_waitingArrowAlcove").to_int()) || (get_property("cyrptAlcoveEvilness").to_int() <= 25)) && edAlcove && canGroundhog($location[The Defiled Alcove]))
 	{
-		handleFamiliar("init");
-
 		if((get_property("_badlyRomanticArrows").to_int() == 0) && sl_have_familiar($familiar[Reanimated Reanimator]) && (my_daycount() == 1))
 		{
 			handleFamiliar($familiar[Reanimated Reanimator]);
 		}
 
-		buffMaintain($effect[Sepia Tan], 0, 1, 1);
-		buffMaintain($effect[Walberg\'s Dim Bulb], 5, 1, 1);
-		buffMaintain($effect[Bone Springs], 40, 1, 1);
-		buffMaintain($effect[Springy Fusilli], 10, 1, 1);
-		buffMaintain($effect[Patent Alacrity], 0, 1, 1);
-		if((my_class() == $class[Seal Clubber]) || (my_class() == $class[Turtle Tamer]))
-		{
-			buyUpTo(1, $item[Cheap Wind-up Clock]);
-			buffMaintain($effect[Ticking Clock], 0, 1, 1);
-		}
-		buffMaintain($effect[Song of Slowness], 110, 1, 1);
-		buffMaintain($effect[Your Fifteen Minutes], 90, 1, 1);
-		buffMaintain($effect[Fishy\, Oily], 0, 1, 1);
-
-		if(have_effect($effect[init.enh]) == 0)
-		{
-			int enhances = sl_sourceTerminalEnhanceLeft();
-			if(enhances > 0)
-			{
-				sl_sourceTerminalEnhance("init");
-			}
-		}
-
-		if((have_effect($effect[Soles of Glass]) == 0) && (get_property("_grimBuff") == false))
-		{
-			visit_url("choice.php?pwd&whichchoice=835&option=1", true);
-		}
-
 		slEquip($item[Gravy Boat]);
-
 		if(!useMaximizeToEquip() && (get_property("cyrptAlcoveEvilness").to_int() > 26))
 		{
 			slEquip($item[The Nuge\'s Favorite Crossbow]);
 		}
-		bat_formBats();
-
-		addToMaximize("100initiative 850max");
+		provideInitiative(850, true);
 
 		print("The Alcove! (" + initiative_modifier() + ")", "blue");
 		slAdv(1, $location[The Defiled Alcove]);
@@ -9340,9 +9291,8 @@ boolean L7_crypt()
 				set_property("choiceAdventure523", "5");
 			}
 		}
-		buffMaintain($effect[Ceaseless Snarling], 0, 1, 1);
 		providePlusNonCombat(25);
-		addToMaximize("200ml 149max");
+		provideML(150, true);
 		slAdv(1, $location[The Defiled Cranny]);
 		return true;
 	}
@@ -10208,10 +10158,10 @@ boolean L4_batCave()
 		return true;
 	}
 
-	buffMaintain($effect[Hide of Sobek], 10, 1, 1);
-	buffMaintain($effect[Astral Shell], 10, 1, 1);
-	buffMaintain($effect[Elemental Saucesphere], 10, 1, 1);
-	buffMaintain($effect[Spectral Awareness], 10, 1, 1);
+	// TODO: Once non-maximizer based equipment is scrapped,
+	//       just do if(provideResistances(req))
+	int [element] reqs = { $element[stench]: 1 };
+	provideResistances(reqs, true);
 	if(elemental_resist($element[stench]) < 1)
 	{
 		if(!useMaximizeToEquip())
@@ -11338,9 +11288,9 @@ boolean LX_handleSpookyravenFirstFloor()
 			}
 			if((my_mp() > mpNeed) && (my_hp() > hpNeed) && (hot >= 9) && (stench >= 9))
 			{
-				buffMaintain($effect[Astral Shell], mp_cost($skill[Astral Shell]), 1, 1);
-				buffMaintain($effect[Elemental Saucesphere], mp_cost($skill[Elemental Saucesphere]), 1, 1);
-				buffMaintain($effect[Spectral Awareness], hp_cost($skill[Spectral Awareness]), 1, 1);
+				// TODO: Replace the above logic with a simulated provideResistances
+				int [element] reqs = { $element[hot]: 9, $element[stench]: 9 };
+				provideResistances(reqs, true);
 			}
 			if((elemental_resist($element[hot]) >= 9) && (elemental_resist($element[stench]) >= 9))
 			{
@@ -11494,14 +11444,6 @@ boolean LX_handleSpookyravenFirstFloor()
 	else
 	{
 		print("Looking for the Billards Room key (Hot/Stench:" + elemental_resist($element[hot]) + "/" + elemental_resist($element[stench]) + "): Progress " + get_property("manorDrawerCount") + "/24", "blue");
-		handleFamiliar($familiar[Exotic Parrot]);
-		if(is100FamiliarRun())
-		{
-			if(sl_have_familiar($familiar[Trick-or-Treating Tot]) && (available_amount($item[Li\'l Candy Corn Costume]) > 0))
-			{
-				handleFamiliar($familiar[Trick-or-Treating Tot]);
-			}
-		}
 		if(get_property("manorDrawerCount").to_int() >= 24)
 		{
 			cli_execute("refresh inv");
@@ -11511,11 +11453,9 @@ boolean LX_handleSpookyravenFirstFloor()
 				wait(10);
 			}
 		}
-		buffMaintain($effect[Hide of Sobek], 10, 1, 1);
-		buffMaintain($effect[Patent Prevention], 0, 1, 1);
-		bat_formMist();
 
-		addToMaximize("1000hot resistance 9 max,1000 stench resistance 9 max");
+		int [element] reqs = { $element[hot]: 9, $element[stench]: 9 };
+		provideResistances(reqs, true);
 		slAdv(1, $location[The Haunted Kitchen]);
 		handleFamiliar("item");
 	}
@@ -12064,18 +12004,13 @@ boolean L9_aBooPeak()
 		if(doThisBoo)
 		{
 			buffMaintain($effect[Go Get \'Em\, Tiger!], 0, 1, 1);
-			bat_formMist();
-			if(0 == have_effect($effect[Mist Form]))
+			if(!useMaximizeToEquip())
 			{
-				buffMaintain($effect[Spectral Awareness], 10, 1, 1);
-			}
-			if(useMaximizeToEquip())
-			{
-				addToMaximize("1000spooky res,1000 cold res,10hp" + parrot);
+				slMaximize("spooky res, cold res " + lihcface + " -equip snow suit" + parrot, 0, 0, false);
 			}
 			else
 			{
-				slMaximize("spooky res, cold res " + lihcface + " -equip snow suit" + parrot, 0, 0, false);
+				addToMaximize("10hp");
 			}
 			adjustEdHat("ml");
 
@@ -12083,15 +12018,8 @@ boolean L9_aBooPeak()
 			{
 				equip($slot[acc2], $item[ghost of a necklace]);
 			}
-			buffMaintain($effect[Astral Shell], 10, 1, 1);
-			buffMaintain($effect[Elemental Saucesphere], 10, 1, 1);
-			buffMaintain($effect[Scarysauce], 10, 1, 1);
-			buffMaintain($effect[Spookypants], 0, 1, 1);
-			buffMaintain($effect[Hyphemariffic], 0, 1, 1);
-			buffMaintain($effect[Insulated Trousers], 0, 1, 1);
-			buffMaintain($effect[Balls of Ectoplasm], 0, 1, 1);
-			buffMaintain($effect[Red Door Syndrome], 0, 1, 1);
-			buffMaintain($effect[Well-Oiled], 0, 1, 1);
+			int [element] reqs = { $element[cold]: 1000, $element[spooky]: 1000 };
+			provideResistances(reqs, true);
 
 			set_property("choiceAdventure611", "1");
 			if((my_hp() - 50) < totalDamage)
@@ -12106,7 +12034,6 @@ boolean L9_aBooPeak()
 				}
 				set_property("sl_aboopending", my_turncount());
 			}
-			handleFamiliar($familiar[Exotic Parrot]);
 			# When booPeakProgress <= 0, we want to leave this adventure. Can we?
 			# I can not figure out how to do this via ASH since the adventure completes itself?
 			# However, in mafia, (src/net/sourceforge/kolmafia/session/ChoiceManager.java)
@@ -12232,16 +12159,7 @@ boolean L9_twinPeak()
 	boolean attempt = false;
 	if(needInit)
 	{
-		buffMaintain($effect[Adorable Lookout], 0, 1, 1);
-		if(initiative_modifier() < 40.0)
-		{
-			if((my_class() == $class[Turtle Tamer]) || (my_class() == $class[Seal Clubber]))
-			{
-				buyUpTo(1, $item[Cheap Wind-Up Clock]);
-				buffMaintain($effect[Ticking Clock], 0, 1, 1);
-			}
-		}
-		if(initiative_modifier() < 40.0)
+		if(!provideInitiative(40, true))
 		{
 			return false;
 		}
@@ -12290,10 +12208,8 @@ boolean L9_twinPeak()
 
 	if(!attempt && needStench)
 	{
-		buffMaintain($effect[Astral Shell], 10, 1, 1);
-		buffMaintain($effect[Elemental Saucesphere], 10, 1, 1);
-		buffMaintain($effect[Hide of Sobek], 10, 1, 1);
-		buffMaintain($effect[Spectral Awareness], 10, 1, 1);
+		int [element] reqs = { $element[stench]: 4 };
+		provideResistances(reqs, false);
 		int possibleGain = 0;
 		if(item_amount($item[Polysniff Perfume]) > 0)
 		{
@@ -12541,31 +12457,10 @@ boolean L9_oilPeak()
 		print("Oil Peak is finished but we need more crude!", "blue");
 	}
 
-	buffMaintain($effect[Litterbug], 0, 1, 1);
-	buffMaintain($effect[Tortious], 0, 1, 1);
+	provideML(100, true);
 	buffMaintain($effect[Fishy Whiskers], 0, 1, 1);
 	handleFamiliar("initSuggest");
 
-	if((my_class() == $class[Ed]) && get_property("sl_dickstab").to_boolean())
-	{
-		buffMaintain($effect[The Dinsey Look], 0, 1, 1);
-	}
-	if(monster_level_adjustment() < 50)
-	{
-		buffMaintain($effect[The Dinsey Look], 0, 1, 1);
-	}
-	if(monster_level_adjustment() < 100)
-	{
-		buffMaintain($effect[Sweetbreads Flamb&eacute;], 0, 1, 1);
-	}
-	if(monster_level_adjustment() < 60)
-	{
-		buffMaintain($effect[Punchable Face], 50, 1, 1);
-	}
-	if(monster_level_adjustment() < 60)
-	{
-		buffMaintain($effect[Ceaseless Snarling], 0, 1, 1);
-	}
 	if((monster_level_adjustment() < 60))
 	{
 		if (item_amount($item[Dress Pants]) > 0)
@@ -12581,7 +12476,6 @@ boolean L9_oilPeak()
 			}
 		}
 	}
-	addToMaximize("1000ml 100max");
 	slAdv(1, $location[Oil Peak]);
 	if(get_property("lastAdventure") == "Unimpressed with Pressure")
 	{
@@ -13561,41 +13455,23 @@ boolean L8_trapperGroar()
 
 	if(canGroar)
 	{
-		if(elemental_resist($element[cold]) < 5)
-		{
-			buffMaintain($effect[Astral Shell], 10, 1, 1);
-			buffMaintain($effect[Elemental Saucesphere], 10, 1, 1);
-			buffMaintain($effect[Hide of Sobek], 10, 1, 1);
-			buffMaintain($effect[Spectral Awareness], 10, 1, 1);
-			if(elemental_resist($element[cold]) < 5)
-			{
-				bat_formMist();
-			}
-		}
-		string lihcface = "";
-		if((my_class() == $class[Ed]) && possessEquipment($item[The Crown of Ed the Undying]))
-		{
-			lihcface = "-equip lihc face";
-		}
+		int [element] reqs = { $element[cold]: 5 };
+		boolean provided = provideResistances(reqs, true);
 
-		if((elemental_resist($element[cold]) < 5) && (my_level() == get_property("sl_powerLevelLastLevel").to_int()))
+		if(!provided && (my_level() == get_property("sl_powerLevelLastLevel").to_int()))
 		{
-			slMaximize("cold res 5 max,-tie,-equip snow suit", 0, 0, true);
-			int coldResist = simValue("Cold Resistance");
-			if(coldResist >= 5)
+			if(!useMaximizeToEquip())
 			{
-				if(useMaximizeToEquip())
+				slMaximize("cold res 5 max,-tie,-equip snow suit", 0, 0, true);
+				if(simValue("Cold Resistance") >= 5)
 				{
-					addToMaximize("2000cold res 5 max");
-				}
-				else
-				{
-					slMaximize("cold res,-tie,-equip snow suit,-weapon", 0, 0, false);
+					slMaximize("cold res 5 max,-tie,-equip snow suit", 0, 0, false);
+					provided = true;
 				}
 			}
 		}
 
-		if(elemental_resist($element[cold]) >= 5)
+		if(provided)
 		{
 			if(get_property("sl_mistypeak") == "")
 			{
@@ -13890,11 +13766,16 @@ boolean sl_tavern()
 			}
 		}
 
-		if(!maximized)
+		if(!maximized && useMaximizeToEquip())
 		{
-			addToMaximize("200cold damage 20max,200hot damage 20max,200spooky damage 20max,200stench damage 20max,100ml 149max");
+			addToMaximize("200cold damage 20max,200hot damage 20max,200spooky damage 20max,200stench damage 20max");
+			provideML(150, true);
 			simMaximize();
 			maximized = true;
+		}
+		else
+		{
+			provideML(150, false);
 		}
 		int [string] eleChoiceCombos = {
 			"Cold": 513,
@@ -14047,8 +13928,7 @@ boolean L3_tavern()
 
 	buffMaintain($effect[The Sonata of Sneakiness], 20, 1, 1);
 	buffMaintain($effect[Smooth Movements], 10, 1, 1);
-	buffMaintain($effect[Tortious], 0, 1, 1);
-	buffMaintain($effect[Litterbug], 0, 1, 1);
+	provideML(150, true);
 	sl_change_mcd(11);
 
 	if(get_property("questL03Rat") == "unstarted")

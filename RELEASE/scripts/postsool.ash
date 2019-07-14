@@ -722,22 +722,7 @@ void handlePostAdventure()
 		buffMaintain($effect[Singer\'s Faithful Ocelot], 280, 1, 10);
 		if(doML)
 		{
-			if((monster_level_adjustment() + (2 * my_level())) <= 150)
-			{
-				buffMaintain($effect[Ur-Kel\'s Aria of Annoyance], 80, 1, 10);
-			}
-			if((monster_level_adjustment() + 10) <= 150)
-			{
-				buffMaintain($effect[Drescher\'s Annoying Noise], 80, 1, 10);
-			}
-			if((monster_level_adjustment() + 10) <= 150)
-			{
-				buffMaintain($effect[Pride of the Puffin], 80, 1, 10);
-			}
-			if((monster_level_adjustment() + 30) <= 150)
-			{
-				buffMaintain($effect[Ceaseless Snarling], 0, 1, 10);
-			}
+			provideML(150, false);
 		}
 		buffMaintain($effect[Big], 100, 1, 10);
 		buffMaintain($effect[Rage of the Reindeer], 80, 1, 10);
