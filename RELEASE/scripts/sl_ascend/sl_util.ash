@@ -3215,7 +3215,7 @@ boolean provideResistances(int [element] amt, boolean doEquips)
 	if(doEquips)
 	{
 		// effects from items that we'd have to buy or have found
-		if(tryEffects($effects[Red Door Syndrome, Well-Oiled, Oiled-Up]))
+		if(tryEffects($effects[Red Door Syndrome, Well-Oiled, Oiled-Up, Egged On]))
 			return true;
 
 		// element specific effects
