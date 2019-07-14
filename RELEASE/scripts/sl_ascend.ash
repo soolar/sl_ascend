@@ -1,6 +1,6 @@
 script "sl_ascend.ash";
 notify soolar the second;
-since r19375; // beach comb
+since r19335; // monster.copyable
 /***
 	Killing is wrong, and bad. There should be a new, stronger word for killing like badwrong or badong. YES, killing is badong. From this moment, I will stand for the opposite of killing, gnodab.
 
@@ -146,6 +146,7 @@ void initializeSettings()
 	set_property("sl_eaten", "");
 	set_property("sl_familiarChoice", $familiar[none]);
 	set_property("sl_fcle", "");
+	set_property("sl_forceTavern", false);
 	set_property("sl_friars", "");
 	set_property("sl_funTracker", "");
 	set_property("sl_getBoningKnife", false);
@@ -2640,7 +2641,12 @@ boolean doBedtime()
 		use(1, $item[resolution: be more adventurous]);
 	}
 
-	if((my_daycount() <= 2) && (freeCrafts() > 0))
+	if(in_tcrs())
+	{
+		print("Using My Free Crafts will have no benefit.", "red");
+		print("Consider manually using your "+freeCrafts()+" free crafts"), "red");
+	}
+	else if((my_daycount() <= 2) && (freeCrafts() > 0))
 	{
 		// Check for rapid prototyping
 		while((freeCrafts() > 0) && (item_amount($item[Scrumptious Reagent]) > 0) && (item_amount($item[Cranberries]) > 0) && (item_amount($item[Cranberry Cordial]) < 2) && have_skill($skill[Advanced Saucecrafting]))
@@ -6976,6 +6982,8 @@ boolean L11_unlockEd()
 	if(get_property("sl_tavern") != "finished")
 	{
 		print("Uh oh, didn\'t do the tavern and we are at the pyramid....", "red");
+		set_property("sl_forceTavern", true);
+		L3_tavern()
 	}
 
 	print("In the pyramid (W:" + item_amount($item[crumbling wooden wheel]) + ") (R:" + item_amount($item[tomb ratchet]) + ") (U:" + get_property("controlRoomUnlock") + ")", "blue");
@@ -9393,6 +9401,11 @@ boolean L7_crypt()
 
 boolean LX_hardcoreFoodFarm()
 {
+	if(in_tcrs())
+	{
+		print("Food farming pointless in my path.", "orange");
+		return false;
+	}
 	if(!in_hardcore() || !isGuildClass())
 	{
 		return false;
@@ -12566,6 +12579,15 @@ boolean L9_oilPeak()
 	{
 		buffMaintain($effect[Ceaseless Snarling], 0, 1, 1);
 	}
+	// Maximize Asdon usage
+	if(((monster_level_adjustment() >= 75) && (monster_level_adjustment() <= 99)) || ((monster_level_adjustment() >= 25) && (monster_level_adjustment() <= 49)) || (monster_level_adjustment() <= 11))
+	{
+		asdonBuff($effect[Driving Recklessly]);
+	}
+	else
+	{
+		asdonBuff($effect[Driving Wastefully]);
+	}
 	if((monster_level_adjustment() < 60))
 	{
 		if (item_amount($item[Dress Pants]) > 0)
@@ -12586,6 +12608,11 @@ boolean L9_oilPeak()
 	if(get_property("lastAdventure") == "Unimpressed with Pressure")
 	{
 		set_property("oilPeakProgress", 0.0);
+		// Brute Force grouping with tavern (if not done) to maximize tangles while we have a high ML.
+		print("Checking to see if we should do the tavern while we are running high ML.", "green");
+		set_property("sl_forceTavern", true);
+		L3_tavern()
+
 	}
 	handleFamiliar("item");
 	return true;
@@ -13914,6 +13941,19 @@ boolean sl_tavern()
 			providePlusNonCombat(25);
 		}
 
+		// Maximize ML First by using equipment
+		if((monster_level_adjustment() <= 150) && (!my_path() == "Actually Ed the Undying"))
+		{
+			string to_max = "ML";
+			maximize(to_max, false);
+		}		
+
+		// Asdon usage increases Rat King chance by 8.3%
+		if((monster_level_adjustment() <= 150) && (!my_path() == "Actually Ed the Undying"))
+		{
+			asdonBuff($effect[Driving Recklessly]);
+		}
+
 		tavern = get_property("tavernLayout");
 		if(tavern == "0000000000000000000000000")
 		{
@@ -14033,7 +14073,7 @@ boolean L3_tavern()
 		delayTavern = false;
 	}
 
-	if(delayTavern)
+	if((delayTavern) && (!get_property("sl_forceTavern").to_boolean()))
 	{
 		return false;
 	}
