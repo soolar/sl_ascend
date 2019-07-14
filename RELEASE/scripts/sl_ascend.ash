@@ -918,34 +918,29 @@ void maximize_hedge()
 	element first = ns_hedge1();
 	element second = ns_hedge2();
 	element third = ns_hedge3();
+	int [element] reqs;
 	if((first == $element[none]) || (second == $element[none]) || (third == $element[none]))
 	{
-		if(useMaximizeToEquip())
+		foreach ele in $elements[hot, cold, stench, spooky, sleaze]
 		{
-			addToMaximize("200all res");
+			reqs[ele] = 7;
 		}
-		else
+		if(!useMaximizeToEquip())
 		{
 			slMaximize("all res -equip snow suit", 2500, 0, false);
 		}
 	}
 	else
 	{
-		if(useMaximizeToEquip())
-		{
-			addToMaximize("200" + first + " res,200" + second + " res,200" + third + " res");
-		}
-		else
+		reqs[first] = 7;
+		reqs[second] = 7;
+		reqs[third] = 7;
+		if(!useMaximizeToEquip())
 		{
 			slMaximize(to_string(first) + " res, " + to_string(second) + " res, " + to_string(third) + " res -equip snow suit", 2500, 0, false);
 		}
 	}
-
-	bat_formMist();
-	foreach eff in $effects[Egged On, Patent Prevention, Spectral Awareness]
-	{
-		buffMaintain(eff, 0, 1, 1);
-	}
+	provideResistances(reqs);
 }
 
 int pullsNeeded(string data)
