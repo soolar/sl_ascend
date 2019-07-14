@@ -6983,7 +6983,7 @@ boolean L11_unlockEd()
 	{
 		print("Uh oh, didn\'t do the tavern and we are at the pyramid....", "red");
 		set_property("sl_forceTavern", true);
-		L3_tavern()
+		L3_tavern();
 	}
 
 	print("In the pyramid (W:" + item_amount($item[crumbling wooden wheel]) + ") (R:" + item_amount($item[tomb ratchet]) + ") (U:" + get_property("controlRoomUnlock") + ")", "blue");
@@ -12521,7 +12521,6 @@ boolean L9_oilPeak()
 		return false;
 	}
 
-	print("Oil Peak with ML: " + monster_level_adjustment(), "blue");
 
 	if(contains_text(visit_url("place.php?whichplace=highlands"), "fire3.gif"))
 	{
@@ -12579,6 +12578,14 @@ boolean L9_oilPeak()
 	{
 		buffMaintain($effect[Ceaseless Snarling], 0, 1, 1);
 	}
+
+	// Never puddle jump, but don't deliberately go crowd-punching the Cartels
+	if(((monster_level_adjustment() >= 25) && (monster_level_adjustment() <= 49)) || (monster_level_adjustment() <= 11))
+	{
+		string to_max = "ML";
+		maximize(to_max, false);
+	}
+
 	// Maximize Asdon usage
 	if(((monster_level_adjustment() >= 75) && (monster_level_adjustment() <= 99)) || ((monster_level_adjustment() >= 25) && (monster_level_adjustment() <= 49)) || (monster_level_adjustment() <= 11))
 	{
@@ -12588,6 +12595,7 @@ boolean L9_oilPeak()
 	{
 		asdonBuff($effect[Driving Wastefully]);
 	}
+
 	if((monster_level_adjustment() < 60))
 	{
 		if (item_amount($item[Dress Pants]) > 0)
@@ -12603,6 +12611,9 @@ boolean L9_oilPeak()
 			}
 		}
 	}
+
+	print("Oil Peak with ML: " + monster_level_adjustment(), "blue");
+
 	addToMaximize("1000ml 100max");
 	slAdv(1, $location[Oil Peak]);
 	if(get_property("lastAdventure") == "Unimpressed with Pressure")
@@ -12611,7 +12622,7 @@ boolean L9_oilPeak()
 		// Brute Force grouping with tavern (if not done) to maximize tangles while we have a high ML.
 		print("Checking to see if we should do the tavern while we are running high ML.", "green");
 		set_property("sl_forceTavern", true);
-		L3_tavern()
+		L3_tavern();
 
 	}
 	handleFamiliar("item");
