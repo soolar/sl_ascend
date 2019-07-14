@@ -3049,12 +3049,19 @@ boolean provideInitiative(int amt, boolean doEquips)
 	if(pass())
 		return true;
 
-	foreach eff in $effects[Cletus's Canticle of Celerity, Springy Fusilli, Soulerskates, Walberg's Dim Bulb, Song of Slowness, Your Fifteen Minutes, Suspicious Gaze, Bone Springs, Living Fast]
+	boolean tryEffects(boolean [effect] effects)
 	{
-		buffMaintain(eff, 0, 1, 1);
-		if(pass())
-			return true;
+		foreach eff in effects
+		{
+			buffMaintain(eff, 0, 1, 1);
+			if(pass())
+				return true;
+		}
+		return false;
 	}
+
+	if(tryEffects($effects[Cletus's Canticle of Celerity, Springy Fusilli, Soulerskates, Walberg's Dim Bulb, Song of Slowness, Your Fifteen Minutes, Suspicious Gaze, Bone Springs, Living Fast]))
+		return true;
 
 	asdonBuff($effect[Driving Quickly]);
 	if(pass())
@@ -3071,12 +3078,8 @@ boolean provideInitiative(int amt, boolean doEquips)
 			return true;
 	}
 
-	foreach eff in $effects[Adorable Lookout, Alacri Tea, All Fired Up, Fishy\, Oily, The Glistening, Human-Machine Hybrid, Patent Alacrity, Provocative Perkiness, Sepia Tan, Sugar Rush, Ticking Clock, Well-Swabbed Ear]
-	{
-		buffMaintain(eff, 0, 1, 1);
-		if(pass())
-			return true;
-	}
+	if(tryEffects($effects[Adorable Lookout, Alacri Tea, All Fired Up, Fishy\, Oily, The Glistening, Human-Machine Hybrid, Patent Alacrity, Provocative Perkiness, Sepia Tan, Sugar Rush, Ticking Clock, Well-Swabbed Ear]))
+		return true;
 
 	if(sl_sourceTerminalEnhanceLeft() > 0 && have_effect($effect[init.enh]) == 0)
 	{
