@@ -940,7 +940,7 @@ void maximize_hedge()
 			slMaximize(to_string(first) + " res, " + to_string(second) + " res, " + to_string(third) + " res -equip snow suit", 2500, 0, false);
 		}
 	}
-	provideResistances(reqs);
+	provideResistances(reqs, true);
 }
 
 int pullsNeeded(string data)
