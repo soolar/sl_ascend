@@ -2644,7 +2644,7 @@ boolean doBedtime()
 	if(in_tcrs())
 	{
 		print("Using My Free Crafts will have no benefit.", "red");
-		print("Consider manually using your "+freeCrafts()+" free crafts"), "red");
+		print("Consider manually using your "+freeCrafts()+" free crafts", "red");
 	}
 	else if((my_daycount() <= 2) && (freeCrafts() > 0))
 	{
