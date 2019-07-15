@@ -13952,17 +13952,20 @@ boolean sl_tavern()
 			providePlusNonCombat(25);
 		}
 
-		// Maximize ML First by using equipment
-		if((monster_level_adjustment() <= 150) && (!my_path() == "Actually Ed the Undying"))
+		if(my_path() != "Actually Ed the Undying")
 		{
-			string to_max = "ML";
-			maximize(to_max, false);
-		}		
-
-		// Asdon usage increases Rat King chance by 8.3%
-		if((monster_level_adjustment() <= 150) && (!my_path() == "Actually Ed the Undying"))
-		{
-			asdonBuff($effect[Driving Recklessly]);
+			// Maximize ML First by using equipment
+			if(monster_level_adjustment() <= 150)
+			{
+				string to_max = "ML";
+				maximize(to_max, false);
+			}		
+	
+			// Asdon usage increases Rat King chance by 8.3%
+			if(monster_level_adjustment() <= 150)
+			{
+				asdonBuff($effect[Driving Recklessly]);
+			}
 		}
 
 		tavern = get_property("tavernLayout");
