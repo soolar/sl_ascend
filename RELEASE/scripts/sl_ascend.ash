@@ -12579,13 +12579,6 @@ boolean L9_oilPeak()
 		buffMaintain($effect[Ceaseless Snarling], 0, 1, 1);
 	}
 
-	// Never puddle jump, but don't deliberately go crowd-punching the Cartels
-	if(((monster_level_adjustment() >= 25) && (monster_level_adjustment() <= 49)) || (monster_level_adjustment() <= 11))
-	{
-		string to_max = "ML";
-		maximize(to_max, false);
-	}
-
 	// Maximize Asdon usage
 	if(((monster_level_adjustment() >= 75) && (monster_level_adjustment() <= 99)) || ((monster_level_adjustment() >= 25) && (monster_level_adjustment() <= 49)) || (monster_level_adjustment() <= 11))
 	{
@@ -12612,9 +12605,10 @@ boolean L9_oilPeak()
 		}
 	}
 
+	addToMaximize("1000ml 100max");
+
 	print("Oil Peak with ML: " + monster_level_adjustment(), "blue");
 
-	addToMaximize("1000ml 100max");
 	slAdv(1, $location[Oil Peak]);
 	if(get_property("lastAdventure") == "Unimpressed with Pressure")
 	{
@@ -13952,17 +13946,22 @@ boolean sl_tavern()
 			providePlusNonCombat(25);
 		}
 
-		if(my_path() != "Actually Ed the Undying")
+		if((my_path() != "Actually Ed the Undying") && (monster_level_adjustment() <= 299))
 		{
 			// Maximize ML First by using equipment
-			if(monster_level_adjustment() <= 150)
+			if(useMaximizeToEquip())
 			{
+				addToMaximize("1000ml 300max");
+			}
+			else
+			{
+
 				string to_max = "ML";
 				maximize(to_max, false);
 			}		
 	
 			// Asdon usage increases Rat King chance by 8.3%
-			if(monster_level_adjustment() <= 150)
+			if(monster_level_adjustment() <= 299)
 			{
 				asdonBuff($effect[Driving Recklessly]);
 			}
