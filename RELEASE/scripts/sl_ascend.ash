@@ -2641,7 +2641,7 @@ boolean doBedtime()
 		use(1, $item[resolution: be more adventurous]);
 	}
 
-	if(in_tcrs())
+	if((in_tcrs()) && (freeCrafts() > 0))
 	{
 		print("Using My Free Crafts will have no benefit.", "red");
 		print("Consider manually using your "+freeCrafts()+" free crafts", "red");
@@ -9403,7 +9403,7 @@ boolean LX_hardcoreFoodFarm()
 {
 	if(in_tcrs())
 	{
-		print("Food farming pointless in my path.", "orange");
+		print("Food farming pointless in my path.");
 		return false;
 	}
 	if(!in_hardcore() || !isGuildClass())
