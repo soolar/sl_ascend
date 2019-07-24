@@ -212,6 +212,7 @@ void initializeSettings()
 	set_property("sl_treecoin", "");
 	set_property("sl_twinpeak", "");
 	set_property("sl_twinpeakprogress", "");
+	set_property("sl_useSpellsInOrcCamp", false);
 	set_property("sl_waitingArrowAlcove", "50");
 	set_property("sl_wandOfNagamar", true);
 	set_property("sl_war", "");
@@ -12703,8 +12704,56 @@ boolean L9_chasmBuild()
 		return true;
 	}
 
+	// -Combat is useless here since NC is triggered by killing Orcs...So we kill orcs better!
+	asdonBuff($effect[Driving Intimidatingly]);
+
+	// Check our Load out to see if spells are the best option for Orc-Thumping
+	if(setFlavour($element[cold]) && canUse($skill[Stuffed Mortar Shell]))
+	{
+		set_property("sl_useSpellsInOrcCamp", true);
+	}
+
+	if(setFlavour($element[cold]) && canUse($skill[Cannelloni Cannon]))
+	{
+	set_property("sl_useSpellsInOrcCamp", true);
+	}
+
+	if(canUse($skill[Saucegeyser]))
+	{
+		set_property("sl_useSpellsInOrcCamp", true);
+	}
+
+	if(canUse($skill[Saucecicle]))
+	{
+		set_property("sl_useSpellsInOrcCamp", true);
+	}
+
+	// Always Maximize and choose our default Non-Com First, in case we are wrong about the non-com we MAY have some gear still equipped to help us.
+	if(get_property("sl_useSpellsInOrcCamp").to_boolean())
+	{
+		print("Preparing to Blast Orcs with Cold Spells!", "blue");
+		addToMaximize("myst,20spell damage,40spell damage percent,20cold spell damage,-100 ml");
+		buffMaintain($effect[Carol of the Hells], 50, 1, 1);
+		buffMaintain($effect[Song of Sauce], 150, 1, 1);
+
+		// Since we are Buffing for Spells and Myst, set choice adventure just in case
+		set_property("choiceAdventure1345", 2);
+	}
+	else
+	{
+		print("Preparing to Ice-Punch Orcs!", "blue");
+		addToMaximize("muscle,50weapon damage,40weapon damage percent,20cold damage,-100 ml");
+		buffMaintain($effect[Carol of the Bulls], 50, 1, 1);
+		buffMaintain($effect[Song of The North], 150, 1, 1);
+
+		// Since we are Buffing for Weapons and Muscle, set choice adventure just in case
+		set_property("choiceAdventure1345", 1);
+        }
+
 	if(get_property("smutOrcNoncombatProgress").to_int() == 15)
 	{
+		// If we think the non-com will hit NOW we clear maximizer to keep previous settings from carrying forward
+		resetMaximize();
 		print("The smut orc noncombat is about to hit...");
 		// This is a hardcoded patch for Dark Gyffte
 		// TODO: once explicit formulas are spaded, use simulated maximizer
