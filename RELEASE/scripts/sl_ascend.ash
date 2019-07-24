@@ -12791,15 +12791,6 @@ boolean L9_chasmBuild()
 		slAdv(1, $location[The Smut Orc Logging Camp]);
 		return true;
 	}
-	else
-	{
-		if(setFlavour($element[cold]) && sl_have_skill($skill[Stuffed Mortar Shell]))
-		{
-			addToMaximize("20spell damage,80spell damage percent,20cold spell damage,-10ml");
-			buffMaintain($effect[Carol of the Hells], 50, 1, 1);
-			buffMaintain($effect[Song of Sauce], 150, 1, 1);
-		}
-	}
 
 	if(in_hardcore())
 	{
