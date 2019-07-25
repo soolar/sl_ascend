@@ -12704,6 +12704,7 @@ boolean L9_chasmBuild()
 		return true;
 	}
 
+
 	// -Combat is useless here since NC is triggered by killing Orcs...So we kill orcs better!
 	asdonBuff($effect[Driving Intimidatingly]);
 
@@ -12854,6 +12855,11 @@ boolean L9_chasmBuild()
 		foreach it in $items[Loadstone, Logging Hatchet]
 		{
 			slEquip(it);
+		}
+
+		//Remove Ur-kel's if we have it running
+		if(0 < have_effect($effect[Ur-Kel\'s Aria of Annoyance])) {
+			uneffect($effect[Ur-Kel\'s Aria of Annoyance]);
 		}
 
 		sl_change_mcd(0);
