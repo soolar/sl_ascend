@@ -12858,7 +12858,8 @@ boolean L9_chasmBuild()
 		}
 
 		//Remove Ur-kel's if we have it running
-		if(0 < have_effect($effect[Ur-Kel\'s Aria of Annoyance])) {
+		if(0 < have_effect($effect[Ur-Kel\'s Aria of Annoyance]))
+		{
 			uneffect($effect[Ur-Kel\'s Aria of Annoyance]);
 		}
 

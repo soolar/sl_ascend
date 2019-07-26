@@ -735,6 +735,11 @@ void handlePostAdventure()
 		buffMaintain($effect[Singer\'s Faithful Ocelot], 280, 1, 10);
 		if(doML)
 		{
+			// Catch when we leave Smut Orc
+			if(0 < have_effect($effect[Driving Intimidatingly]))
+			{
+				uneffect(Driving Intimidatingly);
+			}
 			if((monster_level_adjustment() + (2 * my_level())) <= 150)
 			{
 				buffMaintain($effect[Ur-Kel\'s Aria of Annoyance], 80, 1, 10);
