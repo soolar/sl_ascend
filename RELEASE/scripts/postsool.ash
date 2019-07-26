@@ -655,6 +655,7 @@ void handlePostAdventure()
 		}
 
 		boolean doML = true;
+		boolean removeML = false;
 		if(get_property("kingLiberated").to_boolean())
 		{
 			doML = false;
@@ -666,10 +667,12 @@ void handlePostAdventure()
 		if(my_location() == $location[The Smut Orc Logging Camp])
 		{
 			doML = false;
+			removeML = true;
 		}
 		if(((get_property("flyeredML").to_int() > 9999) || get_property("sl_hippyInstead").to_boolean() || (get_property("sl_war") == "finished") || (get_property("sidequestArenaCompleted") != "none")) && (my_level() >= 13))
 		{
 			doML = false;
+			removeML = true;
 			#sl_change_mcd(0);
 		}
 		if((my_mp() > 150) && (my_maxhp() > 300) && (my_hp() < 140))
@@ -757,6 +760,32 @@ void handlePostAdventure()
 				buffMaintain($effect[Ceaseless Snarling], 0, 1, 10);
 			}
 		}
+
+		// If we are in some state where we do not want +ML (Level 13 or Smut Orc) make sure ML is removed
+		if(removeML)
+		{
+			if(0 < have_effect($effect[Driving Recklessly]))
+			{
+				uneffect(Driving Recklessly);
+			}
+			if(0 < have_effect($effect[Ur-Kel\'s Aria of Annoyance]))
+			{
+				uneffect(Ur-Kel\'s Aria of Annoyance);
+			}
+			if(0 < have_effect($effect[Drescher\'s Annoying Noise]))
+			{
+				uneffect(Drescher\'s Annoying Noise);
+			}
+			if(0 < have_effect(Pride of the Puffin]))
+			{
+				uneffect(Pride of the Puffin);
+			}
+			if(0 < have_effect($effect[Ceaseless Snarling]))
+			{
+				uneffect(Ceaseless Snarling);
+			}
+		}
+
 		buffMaintain($effect[Big], 100, 1, 10);
 		buffMaintain($effect[Rage of the Reindeer], 80, 1, 10);
 		buffMaintain($effect[Astral Shell], 80, 1, 10);
