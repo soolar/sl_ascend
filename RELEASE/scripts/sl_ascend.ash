@@ -12556,19 +12556,6 @@ boolean L9_oilPeak()
 			}
 			set_property("sl_oilpeak", "finished");
 
-			// Reset basline
-			set_property("sl_maximize_baseline", "");
-
-			// Brute Force grouping with tavern (if not done) to maximize tangles while we have a high ML.
-			print("Checking to see if we should do the tavern while we are running high ML.", "green");
-			set_property("sl_forceTavern", true);
-
-			// Remove Driving Wastefully if we had it
-			if (0 < have_effect($effect[Driving Wastefully]))
-			{
-				uneffect($effect[Driving Wastefully]);
-			}
-
 			return true;
 		}
 
@@ -12642,11 +12629,23 @@ boolean L9_oilPeak()
 
 	slAdv(1, $location[Oil Peak]);
 
-// This does nothing, get_property("lastAdventure") only returns "Oil Peak" at this point
-//	if(get_property("lastAdventure") == "Unimpressed with Pressure")
-//	{
-//		set_property("oilPeakProgress", 0.0);
-//	}
+	if(get_property("lastEncounter") == "Unimpressed with Pressure")
+	{
+		set_property("oilPeakProgress", 0.0);
+
+		// Reset basline
+		set_property("sl_maximize_baseline", "");
+
+		// Brute Force grouping with tavern (if not done) to maximize tangles while we have a high ML.
+		print("Checking to see if we should do the tavern while we are running high ML.", "green");
+		set_property("sl_forceTavern", true);
+
+		// Remove Driving Wastefully if we had it
+		if (0 < have_effect($effect[Driving Wastefully]))
+		{
+			uneffect($effect[Driving Wastefully]);
+		}
+	}
 
 	handleFamiliar("item");
 
