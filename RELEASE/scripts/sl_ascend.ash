@@ -13969,7 +13969,7 @@ boolean sl_tavern()
 			// Maximize ML First by using equipment
 			if(useMaximizeToEquip())
 			{
-				addToMaximize("1000ml 300max");
+				addToMaximize("500ml 300max");
 			}
 
 			// Asdon usage increases Rat King chance by 8.3%
@@ -13985,7 +13985,7 @@ boolean sl_tavern()
 		if(!maximized)
 		{
 			// Tails are a better time saving investment
-			addToMaximize("200cold damage 20max,200hot damage 20max,200spooky damage 20max,200stench damage 20max,1000ml 300max");
+			addToMaximize("200cold damage 20max,200hot damage 20max,200spooky damage 20max,200stench damage 20max,500ml 300max");
 			simMaximize();
 			maximized = true;
 		}
