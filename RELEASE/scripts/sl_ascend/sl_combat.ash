@@ -1437,6 +1437,10 @@ string sl_combatHandler(int round, string opp, string text)
 			{
 				return useSkill($skill[Northern Explosion]);
 			}
+			else
+			{
+				print("None of our preferred skills available. Engaging in Fisticuffs.", "red");
+			}
 		}
 
 		if(my_location() == $location[The Haunted Kitchen] && equipped_amount($item[vampyric cloake]) > 0 && get_property("_vampyreCloakeFormUses").to_int() < 10)

@@ -212,7 +212,6 @@ void initializeSettings()
 	set_property("sl_treecoin", "");
 	set_property("sl_twinpeak", "");
 	set_property("sl_twinpeakprogress", "");
-	set_property("sl_useSpellsInOrcCamp", false);
 	set_property("sl_waitingArrowAlcove", "50");
 	set_property("sl_wandOfNagamar", true);
 	set_property("sl_war", "");
@@ -12709,28 +12708,29 @@ boolean L9_chasmBuild()
 	asdonBuff($effect[Driving Intimidatingly]);
 
 	// Check our Load out to see if spells are the best option for Orc-Thumping
+	skill useSpellsInOrcCamp = $skill[none];
 	if(setFlavour($element[cold]) && canUse($skill[Stuffed Mortar Shell]))
 	{
-		set_property("sl_useSpellsInOrcCamp", true);
+		useSpellsInOrcCamp = $skill[Stuffed Mortar Shell];
 	}
 
 	if(setFlavour($element[cold]) && canUse($skill[Cannelloni Cannon]))
 	{
-	set_property("sl_useSpellsInOrcCamp", true);
+		useSpellsInOrcCamp = $skill[Cannelloni Cannon];
 	}
 
 	if(canUse($skill[Saucegeyser]))
 	{
-		set_property("sl_useSpellsInOrcCamp", true);
+		useSpellsInOrcCamp = $skill[Saucegeyser];
 	}
 
 	if(canUse($skill[Saucecicle]))
 	{
-		set_property("sl_useSpellsInOrcCamp", true);
+		useSpellsInOrcCamp = $skill[Saucecicle];
 	}
 
 	// Always Maximize and choose our default Non-Com First, in case we are wrong about the non-com we MAY have some gear still equipped to help us.
-	if(get_property("sl_useSpellsInOrcCamp").to_boolean())
+	if(useSpellsInOrcCamp != $skill[none])
 	{
 		print("Preparing to Blast Orcs with Cold Spells!", "blue");
 		addToMaximize("myst,20spell damage,40spell damage percent,20cold spell damage,-100 ml");
@@ -12855,12 +12855,6 @@ boolean L9_chasmBuild()
 		foreach it in $items[Loadstone, Logging Hatchet]
 		{
 			slEquip(it);
-		}
-
-		//Remove Ur-kel's if we have it running
-		if(0 < have_effect($effect[Ur-Kel\'s Aria of Annoyance]))
-		{
-			uneffect($effect[Ur-Kel\'s Aria of Annoyance]);
 		}
 
 		sl_change_mcd(0);

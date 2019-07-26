@@ -736,13 +736,24 @@ void handlePostAdventure()
 #		buffMaintain($effect[Prayer of Seshat], 5, 1, 10);
 
 		buffMaintain($effect[Singer\'s Faithful Ocelot], 280, 1, 10);
+
+		// Setup Adson Delay. We always drop Reckless Driving, but can afford to postpone dropping Intimidation for ADV delays.
+		int debuffAsdonDelay;
+
 		if(doML)
 		{
-			// Catch when we leave Smut Orc
-			if(0 < have_effect($effect[Driving Intimidatingly]))
+			// Catch when we leave Smut Orc, allow for being "side tracked" buy delay burning
+			if((0 < have_effect($effect[Driving Intimidatingly])) && (debuffAsdonDelay > 1))
 			{
 				uneffect(Driving Intimidatingly);
+				debuffAsdonDelay = 0;
 			}
+			else
+			}
+				debuffAsdonDelay += 1;
+				print("Delaying debuffing Asdon");
+			}
+				
 			if((monster_level_adjustment() + (2 * my_level())) <= 150)
 			{
 				buffMaintain($effect[Ur-Kel\'s Aria of Annoyance], 80, 1, 10);
