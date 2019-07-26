@@ -663,6 +663,10 @@ void handlePostAdventure()
 		{
 			doML = false;
 		}
+		if(my_location() == $location[The Smut Orc Logging Camp])
+		{
+			doML = false;
+		}
 		if(((get_property("flyeredML").to_int() > 9999) || get_property("sl_hippyInstead").to_boolean() || (get_property("sl_war") == "finished") || (get_property("sidequestArenaCompleted") != "none")) && (my_level() >= 13))
 		{
 			doML = false;
