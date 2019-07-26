@@ -12563,6 +12563,12 @@ boolean L9_oilPeak()
 			print("Checking to see if we should do the tavern while we are running high ML.", "green");
 			set_property("sl_forceTavern", true);
 
+			// Remove Driving Wastefully if we had it
+			if (0 < have_effect($effect[Driving Wastefully]))
+			{
+				uneffect($effect[Driving Wastefully]);
+			}
+
 			return true;
 		}
 
