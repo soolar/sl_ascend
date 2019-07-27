@@ -12737,7 +12737,7 @@ boolean L9_chasmBuild()
 		buffMaintain($effect[Carol of the Hells], 50, 1, 1);
 		buffMaintain($effect[Song of Sauce], 150, 1, 1);
 
-		if(get_property("sl_aggressiveBlechHouse"))
+		if(get_property("sl_aggressiveBlechHouse").to_boolean())
 		{
 			// Since we are Buffing for Spells and Myst, set choice adventure just in case
 			print("Aggressive Blech House Enabled. Set for option 2: Blast it down with a spell", "green");
@@ -12757,7 +12757,7 @@ boolean L9_chasmBuild()
 		buffMaintain($effect[Carol of the Bulls], 50, 1, 1);
 		buffMaintain($effect[Song of The North], 150, 1, 1);
 
-		if(get_property("sl_aggressiveBlechHouse"))
+		if(get_property("sl_aggressiveBlechHouse").to_boolean())
 		{
 			// Since we are Buffing for Weapons and Muscle, set choice adventure just in case
 			print("Aggressive Blech House Enabled. Set for option 1: Kick it down", "green");
