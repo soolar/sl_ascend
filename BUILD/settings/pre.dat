@@ -1,2 +1,3 @@
 sl_pvpEnable	boolean	Automatically participate in PvP?
 sl_alwaysGetSteelOrgan	boolean	If true, get the Steel Organ in the next ascension.
+sl_aggressiveBlechHouse	boolean	If true, does not stop if it encounters Blech House when we are not expecting it.

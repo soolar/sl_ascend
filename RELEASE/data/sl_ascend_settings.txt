@@ -73,6 +73,7 @@ post	7	sl_paranoia	integer	How often should we refresh quests? -1 is never, lowe
 
 pre	0	sl_pvpEnable	boolean	Automatically participate in PvP?
 pre	1	sl_alwaysGetSteelOrgan	boolean	If true, get the Steel Organ in the next ascension.
+pre	2	sl_aggressiveBlechHouse	boolean	If true, does not stop if it encounters Blech House when we are not expecting it.
 
 sharing	0	sl_shareMaximizer	boolean	Share maximzer data. This includes the maximzer string, class, path, softcore/hardcore and moon sign.
 

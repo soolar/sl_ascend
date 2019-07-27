@@ -12737,8 +12737,18 @@ boolean L9_chasmBuild()
 		buffMaintain($effect[Carol of the Hells], 50, 1, 1);
 		buffMaintain($effect[Song of Sauce], 150, 1, 1);
 
-		// Since we are Buffing for Spells and Myst, set choice adventure just in case
-		set_property("choiceAdventure1345", 2);
+		if(get_property("sl_aggressiveBlechHouse"))
+		{
+			// Since we are Buffing for Spells and Myst, set choice adventure just in case
+			print("Aggressive Blech House Enabled. Set for option 2: Blast it down with a spell", "green");
+			set_property("choiceAdventure1345", 2);
+		}
+		else
+		{
+			print("If we encounter Blech House when we are not expecting it we will stop.", "blue");
+			print("Currently setup for Myst/Spell Damage, option 2: Blast it down with a spell", "red");
+			set_property("choiceAdventure1345", 0);
+		}
 	}
 	else
 	{
@@ -12747,9 +12757,19 @@ boolean L9_chasmBuild()
 		buffMaintain($effect[Carol of the Bulls], 50, 1, 1);
 		buffMaintain($effect[Song of The North], 150, 1, 1);
 
-		// Since we are Buffing for Weapons and Muscle, set choice adventure just in case
-		set_property("choiceAdventure1345", 1);
-        }
+		if(get_property("sl_aggressiveBlechHouse"))
+		{
+			// Since we are Buffing for Weapons and Muscle, set choice adventure just in case
+			print("Aggressive Blech House Enabled. Set for option 1: Kick it down", "green");
+			set_property("choiceAdventure1345", 1);
+		}
+		else
+		{
+			print("If we encounter Blech House when we are not expecting it we will stop.", "blue");
+			print("Currently setup for Muscle/Weapon Damage, option 1: Kick it down", "red");
+			set_property("choiceAdventure1345", 0);
+		}
+	}
 
 	if(get_property("smutOrcNoncombatProgress").to_int() == 15)
 	{
