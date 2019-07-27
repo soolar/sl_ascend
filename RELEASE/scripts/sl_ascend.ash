@@ -6999,9 +6999,9 @@ boolean L11_unlockEd()
 	{
 		print("Uh oh, didn\'t do the tavern and we are at the pyramid....", "red");
 
-		// Forcing Tavern. Will perform 1 ADV and then go back and do the tavern.
+		// Forcing Tavern.
 		set_property("sl_forceTavern", true);
-		print("DEBUG - ForceTavern: "+ get_property("sl_forceTavern"));
+		if (L3_Tavern()) return true;
 	}
 
 	print("In the pyramid (W:" + item_amount($item[crumbling wooden wheel]) + ") (R:" + item_amount($item[tomb ratchet]) + ") (U:" + get_property("controlRoomUnlock") + ")", "blue");
