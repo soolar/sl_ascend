@@ -17,6 +17,7 @@ boolean tryPantsEat();
 boolean tryCookies();
 boolean canDrink(item toDrink);
 boolean canEat(item toEat);
+boolean sl_maximizedConsumeStuff();
 
 boolean keepOnTruckin()
 {
@@ -769,6 +770,16 @@ void consumeStuff()
 	{
 		cs_eat_spleen();
 		return;
+	}
+
+	if (sl_beta() && !get_property("sl_legacyConsumeStuff").to_boolean())
+	{
+		sl_maximizedConsumeStuff();
+		return;
+	}
+	else
+	{
+		// print("Using old hard-coded consumption strategies. 'set sl_legacyConsumeStuff=false' to use the knapsack-solver consumption strategy.", "red");
 	}
 
 	int mpForOde = mp_cost($skill[The Ode to Booze]);
@@ -1573,6 +1584,12 @@ void consumeStuff()
 
 boolean loadConsumables(string _type, item[int] item_backmap, int[int] cafe_backmap, float[int] adv, int[int] space)
 {
+	// Just in case!
+	if(sl_my_path() == "Dark Gyffte")
+	{
+		abort("We shouldn't be calling loadConsumables() in Dark Gyffte. Please report this.");
+	}
+
 	// type is "eat" or "drink"
 	int EAT   = 3;
 	int DRINK = 5;
@@ -1677,13 +1694,16 @@ boolean loadConsumables(string _type, item[int] item_backmap, int[int] cafe_back
 	if(type == EAT && !canadia_available()) return false;
 
 	// Add daily special
-	int daily_special_limit = 1 + min(my_meat()/(3*autosell_price(daily_special())), organLeft()/organCost(daily_special()));
-	for (int i=0; i < daily_special_limit; i++)
+	if (daily_special() != $item[none] && canConsume(daily_special()))
 	{
-		int n = count(space);
-		space[n] = organCost(daily_special());
-		adv[n] = expectedAdventuresFrom(daily_special());
-		cafe_backmap[n] = daily_special().to_int();
+		int daily_special_limit = 1 + min(my_meat()/(3*min(35, autosell_price(daily_special()))), organLeft()/organCost(daily_special()));
+		for (int i=0; i < daily_special_limit; i++)
+		{
+			int n = count(space);
+			space[n] = organCost(daily_special());
+			adv[n] = expectedAdventuresFrom(daily_special());
+			cafe_backmap[n] = daily_special().to_int();
+		}
 	}
 
 	if(!in_tcrs()) 
@@ -1847,11 +1867,14 @@ boolean sl_autoDrinkOne(boolean simulate)
 	{
 		if (cafe_backmap contains best_index)
 		{
+			print("Drinking from the cafe...", "blue");
 			buffMaintain($effect[Ode to Booze], 20, 1, inebriety[best_index]);
 			return slDrinkCafe(1, cafe_backmap[best_index]);
 		}
 		else
 		{
+			print("Drinking a " + item_backmap[best_index] + "...", "blue");
+			retrieve_item(1, item_backmap[best_index]);
 			return slDrink(1, item_backmap[best_index]);
 		}
 	}
@@ -1895,11 +1918,6 @@ boolean sl_knapsackAutoConsume(string type, boolean simulate)
 	int[item] normal_consumables;
 
 	int remaining_space = organLeft();
-	boolean saving_for_stooper = type == "drink" && sl_have_familiar($familiar[Stooper]) && my_familiar() != $familiar[Stooper];
-	if (saving_for_stooper)
-	{
-		remaining_space += 1;
-	}
 	print("Space: " + remaining_space);
 	boolean[int] result = knapsack(remaining_space, count(space), space, adv);
 
@@ -1950,6 +1968,13 @@ boolean sl_knapsackAutoConsume(string type, boolean simulate)
 
 	if(simulate) return true;
 
+	// Craft everything before getting Milk of Magnesium, since
+	// we might be using non-free crafting turns.
+	foreach it, howmany in normal_consumables
+	{
+		retrieve_item(howmany, it);
+	}
+
 	if(type == "eat")
 	{
 		if (in_tcrs() && get_property("sl_useWishes").to_boolean() && (0 == have_effect($effect[Got Milk])))
@@ -1963,13 +1988,6 @@ boolean sl_knapsackAutoConsume(string type, boolean simulate)
 
 	foreach i in result
 	{
-		if((type == "drink") && space[i] >= inebriety_left() && !get_property("_sl_saving_for_stooper").to_boolean())
-		{
-			print("Saving some liver space left for Stooper...");
-			set_property("_sl_saving_for_stooper", true);
-			break;
-		}
-
 		if (cafe_backmap contains i)
 		{
 			int what = cafe_backmap[i];
@@ -1986,7 +2004,6 @@ boolean sl_knapsackAutoConsume(string type, boolean simulate)
 		else
 		{
 			item what = item_backmap[i];
-			retrieve_item(1, what);
 			if (type == "drink")
 				slDrink(1, what);
 			else if (type == "eat")
@@ -1994,4 +2011,27 @@ boolean sl_knapsackAutoConsume(string type, boolean simulate)
 		}
 	}
 	return true;
+}
+
+boolean sl_maximizedConsumeStuff()
+{
+	if(my_adventures() < 10)
+	{
+		if(my_inebriety() < 8 && inebriety_left() > 0)
+		{
+			// just drink, like, anything, whatever
+			// find the best and biggest thing we can and drink it
+			return sl_autoDrinkOne(false);
+		}
+		if(inebriety_left() > 0)
+		{
+			use_familiar($familiar[none]);
+			return sl_knapsackAutoConsume("drink", false);
+		}
+		if(fullness_left() > 0)
+		{
+			return sl_knapsackAutoConsume("eat", false);
+		}
+	}
+	return false;
 }

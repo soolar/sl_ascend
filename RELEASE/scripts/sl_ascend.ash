@@ -63,7 +63,6 @@ void initializeSettings()
 	{
 		return;
 	}
-	set_property("sl_doneInitialize", my_ascensions());
 	set_location($location[none]);
 
 	set_property("sl_useCubeling", true);
@@ -263,6 +262,8 @@ void initializeSettings()
 	glover_initializeSettings();
 	bat_initializeSettings();
 	tcrs_initializeSettings();
+
+	set_property("sl_doneInitialize", my_ascensions());
 }
 
 boolean handleFamiliar(string type)
@@ -856,7 +857,7 @@ item[monster] catBurglarHeistDesires()
 	if((oreGoal != $item[none]) && (item_amount(oreGoal) < 3) && get_property("sl_trapper") == "start" && in_hardcore())
 		wannaHeists[$monster[mountain man]] = oreGoal;
 
-	if((item_amount($item[killing jar]) == 0) && ((get_property("gnasirProgress").to_int() & 4) == 4) && in_hardcore())
+	if((item_amount($item[killing jar]) == 0) && ((get_property("gnasirProgress").to_int() & 4) == 0) && in_hardcore())
 		wannaHeists[$monster[banshee librarian]] = $item[killing jar];
 
 	if((my_level() >= 11) && !possessEquipment($item[Mega Gem]) && in_hardcore() && (item_amount($item[wet stew]) == 0) && (item_amount($item[wet stunt nut stew]) == 0))
@@ -2418,9 +2419,11 @@ boolean doBedtime()
 	bat_terminateSession();
 
 	equipBaseline();
-	while(LX_freeCombats())
+	while(true)
 	{
+		resetMaximize();
 		handleFamiliar("stat");
+		if(!LX_freeCombats()) break;
 	}
 
 	if((my_class() == $class[Seal Clubber]) && guild_store_available() && isHermitAvailable() && (sl_my_path() != "G-Lover"))
@@ -2969,6 +2972,7 @@ boolean doBedtime()
 		if(sl_have_familiar($familiar[Stooper]) && (inebriety_left() == 0) && (my_familiar() != $familiar[Stooper]) && (sl_my_path() != "Pocket Familiars"))
 		{
 			print("You have a Stooper, you can increase liver by 1!", "blue");
+			use_familiar($familiar[Stooper]);
 		}
 		if(sl_have_familiar($familiar[Machine Elf]) && (get_property("_machineTunnelsAdv").to_int() < 5))
 		{
@@ -5261,6 +5265,7 @@ boolean L13_towerNSEntrance()
 				set_property("sl_powerLevelLastLevel", my_level());
 				return true;
 			}
+			council(); // Log council output
 			abort("Some sidequest is not done for some raisin. Some sidequest is missing, or something is missing, or something is not not something. We don't know what to do.");
 		}
 	}
@@ -9733,11 +9738,14 @@ boolean LX_steelOrgan()
 	else if(get_property("questM10Azazel") == "finished")
 	{
 		print("Considering Steel Organ consumption.....", "blue");
-		if((item_amount($item[Steel Lasagna]) > 0) && (fullness_left() >= 5))
+		if((item_amount($item[Steel Lasagna]) > 0) && (fullness_left() >= $item[Steel Lasagna].fullness))
 		{
 			eatsilent(1, $item[Steel Lasagna]);
 		}
-		if((item_amount($item[Steel Margarita]) > 0) && ((my_inebriety() <= 5) || (my_inebriety() >= 12)))
+		boolean wontBeOverdrunk = inebriety_left() >= $item[Steel Margarita].inebriety - 5;
+		boolean notOverdrunk = my_inebriety() <= inebriety_limit();
+		boolean notSavingForBilliards = hasSpookyravenLibraryKey() || get_property("lastSecondFloorUnlock").to_int() == my_ascensions();
+		if((item_amount($item[Steel Margarita]) > 0) && wontBeOverdrunk && notOverdrunk && (notSavingForBilliards || my_inebriety() + $item[Steel Margarita].inebriety <= 10 || my_inebriety() >= 12))
 		{
 			slDrink(1, $item[Steel Margarita]);
 		}
@@ -13534,6 +13542,8 @@ boolean L8_trapperGroar()
 	}
 	if((internalQuestStatus("questL08Trapper") == 2) && (get_property("currentExtremity").to_int() == 3))
 	{
+		// TODO: There are some reports of this breaking in TCRS, when cold-weather
+		// gear is not sufficient to have 5 cold resistance. Use a maximizer statement?
 		if(outfit("eXtreme Cold-Weather Gear"))
 		{
 			string temp = visit_url("place.php?whichplace=mclargehuge&action=cloudypeak");
