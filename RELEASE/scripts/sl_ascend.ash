@@ -12773,8 +12773,78 @@ boolean L9_chasmBuild()
 		return true;
 	}
 
+
+	// -Combat is useless here since NC is triggered by killing Orcs...So we kill orcs better!
+	asdonBuff($effect[Driving Intimidatingly]);
+
+	// Check our Load out to see if spells are the best option for Orc-Thumping
+	skill useSpellsInOrcCamp = $skill[none];
+	if(setFlavour($element[cold]) && canUse($skill[Stuffed Mortar Shell]))
+	{
+		useSpellsInOrcCamp = $skill[Stuffed Mortar Shell];
+	}
+
+	if(setFlavour($element[cold]) && canUse($skill[Cannelloni Cannon]))
+	{
+		useSpellsInOrcCamp = $skill[Cannelloni Cannon];
+	}
+
+	if(canUse($skill[Saucegeyser]))
+	{
+		useSpellsInOrcCamp = $skill[Saucegeyser];
+	}
+
+	if(canUse($skill[Saucecicle]))
+	{
+		useSpellsInOrcCamp = $skill[Saucecicle];
+	}
+
+	// Always Maximize and choose our default Non-Com First, in case we are wrong about the non-com we MAY have some gear still equipped to help us.
+	if(useSpellsInOrcCamp != $skill[none])
+	{
+		print("Preparing to Blast Orcs with Cold Spells!", "blue");
+		addToMaximize("myst,20spell damage,40spell damage percent,20cold spell damage,-100 ml");
+		buffMaintain($effect[Carol of the Hells], 50, 1, 1);
+		buffMaintain($effect[Song of Sauce], 150, 1, 1);
+
+		if(get_property("sl_beta_test").to_boolean())
+		{
+			// Since we are Buffing for Spells and Myst, set choice adventure just in case
+			print("Aggressive Blech House Enabled. Set for option 2: Blast it down with a spell", "green");
+			set_property("choiceAdventure1345", 2);
+		}
+		else
+		{
+			print("Beta Testing Off: If we encounter Blech House when we are not expecting it we will stop.", "blue");
+			print("Currently setup for Myst/Spell Damage, option 2: Blast it down with a spell", "red");
+			set_property("choiceAdventure1345", 0);
+		}
+	}
+	else
+	{
+		print("Preparing to Ice-Punch Orcs!", "blue");
+		addToMaximize("muscle,50weapon damage,40weapon damage percent,20cold damage,-100 ml");
+		buffMaintain($effect[Carol of the Bulls], 50, 1, 1);
+		buffMaintain($effect[Song of The North], 150, 1, 1);
+
+		if(get_property("sl_beta_test").to_boolean())
+		{
+			// Since we are Buffing for Weapons and Muscle, set choice adventure just in case
+			print("Aggressive Blech House Enabled. Set for option 1: Kick it down", "green");
+			set_property("choiceAdventure1345", 1);
+		}
+		else
+		{
+			print("Beta Testing Off: If we encounter Blech House when we are not expecting it we will stop.", "blue");
+			print("Currently setup for Muscle/Weapon Damage, option 1: Kick it down", "red");
+			set_property("choiceAdventure1345", 0);
+		}
+	}
+
 	if(get_property("smutOrcNoncombatProgress").to_int() == 15)
 	{
+		// If we think the non-com will hit NOW we clear maximizer to keep previous settings from carrying forward
+		resetMaximize();
 		print("The smut orc noncombat is about to hit...");
 		// This is a hardcoded patch for Dark Gyffte
 		// TODO: once explicit formulas are spaded, use simulated maximizer
@@ -12811,15 +12881,6 @@ boolean L9_chasmBuild()
 		}
 		slAdv(1, $location[The Smut Orc Logging Camp]);
 		return true;
-	}
-	else
-	{
-		if(setFlavour($element[cold]) && sl_have_skill($skill[Stuffed Mortar Shell]))
-		{
-			addToMaximize("20spell damage,80spell damage percent,20cold spell damage,-10ml");
-			buffMaintain($effect[Carol of the Hells], 50, 1, 1);
-			buffMaintain($effect[Song of Sauce], 150, 1, 1);
-		}
 	}
 
 	if(in_hardcore())
