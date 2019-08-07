@@ -745,11 +745,11 @@ void handlePostAdventure()
 			// Catch when we leave Smut Orc, allow for being "side tracked" buy delay burning
 			if((0 < have_effect($effect[Driving Intimidatingly])) && (debuffAsdonDelay > 1))
 			{
-				uneffect(Driving Intimidatingly);
+				uneffect($effect[Driving Intimidatingly]);
 				debuffAsdonDelay = 0;
 			}
 			else
-			}
+			{
 				debuffAsdonDelay += 1;
 				print("Delaying debuffing Asdon");
 			}
@@ -777,23 +777,23 @@ void handlePostAdventure()
 		{
 			if(0 < have_effect($effect[Driving Recklessly]))
 			{
-				uneffect(Driving Recklessly);
+				uneffect($effect[Driving Recklessly]);
 			}
 			if(0 < have_effect($effect[Ur-Kel\'s Aria of Annoyance]))
 			{
-				uneffect(Ur-Kel\'s Aria of Annoyance);
+				uneffect($effect[Ur-Kel\'s Aria of Annoyance]);
 			}
 			if(0 < have_effect($effect[Drescher\'s Annoying Noise]))
 			{
-				uneffect(Drescher\'s Annoying Noise);
+				uneffect($effect[Drescher\'s Annoying Noise]);
 			}
-			if(0 < have_effect(Pride of the Puffin]))
+			if(0 < have_effect($effect[Pride of the Puffin]))
 			{
-				uneffect(Pride of the Puffin);
+				uneffect($effect[Pride of the Puffin]);
 			}
 			if(0 < have_effect($effect[Ceaseless Snarling]))
 			{
-				uneffect(Ceaseless Snarling);
+				uneffect($effect[Ceaseless Snarling]);
 			}
 		}
 
