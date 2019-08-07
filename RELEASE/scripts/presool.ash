@@ -223,6 +223,19 @@ void handlePreAdventure(location place)
 		acquireMP(32, true);
 	}
 
+	foreach i,mon in get_monsters(place)
+	{
+		if(sl_wantToYellowRay(mon, place))
+		{
+			adjustForYellowRayIfPossible(mon);
+		}
+
+		if(sl_wantToBanish(mon, place))
+		{
+			adjustForBanishIfPossible(mon, place);
+		}
+	}
+
 	if((place == $location[8-Bit Realm]) && (my_turncount() != 0))
 	{
 		if(!possessEquipment($item[Continuum Transfunctioner]))
@@ -250,19 +263,6 @@ void handlePreAdventure(location place)
 	{
 		print('We want to get the "' + sl_latteDropName(place) + '" ingredient for our latte from ' + place + ", so we're bringing it along.", "blue");
 		slEquip($item[latte lovers member's mug]);
-	}
-
-	foreach i,mon in get_monsters(place)
-	{
-		if(sl_wantToYellowRay(mon, place))
-		{
-			adjustForYellowRayIfPossible(mon);
-		}
-
-		if(sl_wantToBanish(mon, place))
-		{
-			adjustForBanishIfPossible(mon, place);
-		}
 	}
 
 	bat_formPreAdventure();
