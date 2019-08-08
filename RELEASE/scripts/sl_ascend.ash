@@ -12733,7 +12733,7 @@ boolean L9_chasmBuild()
 	if(useSpellsInOrcCamp != $skill[none])
 	{
 		print("Preparing to Blast Orcs with Cold Spells!", "blue");
-		addToMaximize("myst,20spell damage,40spell damage percent,20cold spell damage,-100 ml");
+		addToMaximize("myst,50spell damage,60spell damage percent,40cold spell damage,-1000 ml");
 		buffMaintain($effect[Carol of the Hells], 50, 1, 1);
 		buffMaintain($effect[Song of Sauce], 150, 1, 1);
 
@@ -12753,7 +12753,7 @@ boolean L9_chasmBuild()
 	else
 	{
 		print("Preparing to Ice-Punch Orcs!", "blue");
-		addToMaximize("muscle,50weapon damage,40weapon damage percent,20cold damage,-100 ml");
+		addToMaximize("muscle,50weapon damage,60weapon damage percent,40cold damage,-1000 ml");
 		buffMaintain($effect[Carol of the Bulls], 50, 1, 1);
 		buffMaintain($effect[Song of The North], 150, 1, 1);
 
