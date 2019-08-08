@@ -6832,7 +6832,7 @@ boolean L11_mauriceSpookyraven()
 			asdonBuff($effect[Driving Recklessly]);
 		}
 
-		addToMaximize("100ml 82max");
+		addToMaximize("500ml 82max");
 
 
 		slAdv(1, $location[The Haunted Boiler Room]);
@@ -13984,7 +13984,7 @@ boolean sl_tavern()
 		if(!maximized)
 		{
 			// Tails are a better time saving investment
-			addToMaximize("200cold damage 20max,200hot damage 20max,200spooky damage 20max,200stench damage 20max,500ml 300max");
+			addToMaximize("80cold damage 20max,80hot damage 20max,80spooky damage 20max,80stench damage 20max,500ml 300max");
 			simMaximize();
 			maximized = true;
 		}
