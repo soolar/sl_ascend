@@ -1421,25 +1421,25 @@ string sl_combatHandler(int round, string opp, string text)
 			{
 				return useSkill($skill[Stuffed Mortar Shell]);
 			}
-			else if(canUse($skill[Saucegeyser]))
+			else if(canUse($skill[Saucegeyser], false))
 			{
-				return useSkill($skill[Saucegeyser]);
+				return useSkill($skill[Saucegeyser], false);
 			}
-			else if(canUse($skill[Saucecicle]))
+			else if(canUse($skill[Saucecicle], false))
 			{
-				return useSkill($skill[Saucecicle]);
+				return useSkill($skill[Saucecicle], false);
 			}
-			else if(canUse($skill[Cannelloni Cannon]) && have_effect($effect[Spirit of Peppermint]) != 0)
+			else if(canUse($skill[Cannelloni Cannon], false) && have_effect($effect[Spirit of Peppermint]) != 0)
 			{
-				return useSkill($skill[Cannelloni Cannon]);
+				return useSkill($skill[Cannelloni Cannon], false);
 			}
-			else if(canUse($skill[Northern Explosion]))
+			else if(canUse($skill[Northern Explosion], false))
 			{
-				return useSkill($skill[Northern Explosion]);
+				return useSkill($skill[Northern Explosion], false);
 			}
 			else
 			{
-				print("None of our preferred skills available. Engaging in Fisticuffs.", "red");
+				print("None of our preferred skills available. Engaging in Fisticuffs.", "blue");
 			}
 		}
 
