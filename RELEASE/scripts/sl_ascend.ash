@@ -13968,7 +13968,7 @@ boolean sl_tavern()
 			// Maximize ML First by using equipment
 			if(useMaximizeToEquip())
 			{
-				addToMaximize("500ml 300max");
+				addToMaximize("500ml 150max");
 			}
 
 			// Asdon usage increases Rat King chance by 8.3%
