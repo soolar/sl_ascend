@@ -12714,17 +12714,17 @@ boolean L9_chasmBuild()
 		useSpellsInOrcCamp = $skill[Stuffed Mortar Shell];
 	}
 
-	if(setFlavour($element[cold]) && canUse($skill[Cannelloni Cannon]))
+	if(setFlavour($element[cold]) && canUse($skill[Cannelloni Cannon], false))
 	{
 		useSpellsInOrcCamp = $skill[Cannelloni Cannon];
 	}
 
-	if(canUse($skill[Saucegeyser]))
+	if(canUse($skill[Saucegeyser], false))
 	{
 		useSpellsInOrcCamp = $skill[Saucegeyser];
 	}
 
-	if(canUse($skill[Saucecicle]))
+	if(canUse($skill[Saucecicle], false))
 	{
 		useSpellsInOrcCamp = $skill[Saucecicle];
 	}
@@ -12746,7 +12746,7 @@ boolean L9_chasmBuild()
 		else
 		{
 			print("Beta Testing Off: If we encounter Blech House when we are not expecting it we will stop.", "blue");
-			print("Currently setup for Myst/Spell Damage, option 2: Blast it down with a spell", "red");
+			print("Currently setup for Myst/Spell Damage, option 2: Blast it down with a spell", "blue");
 			set_property("choiceAdventure1345", 0);
 		}
 	}
@@ -12766,7 +12766,7 @@ boolean L9_chasmBuild()
 		else
 		{
 			print("Beta Testing Off: If we encounter Blech House when we are not expecting it we will stop.", "blue");
-			print("Currently setup for Muscle/Weapon Damage, option 1: Kick it down", "red");
+			print("Currently setup for Muscle/Weapon Damage, option 1: Kick it down", "blue");
 			set_property("choiceAdventure1345", 0);
 		}
 	}
