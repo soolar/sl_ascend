@@ -14043,7 +14043,7 @@ boolean sl_tavern()
 		if(!maximized)
 		{
 			// Tails are a better time saving investment
-			addToMaximize("80cold damage 20max,80hot damage 20max,80spooky damage 20max,80stench damage 20max,500ml 300max");
+			addToMaximize("80cold damage 20max,80hot damage 20max,80spooky damage 20max,80stench damage 20max,500ml 150max");
 			simMaximize();
 			maximized = true;
 		}
