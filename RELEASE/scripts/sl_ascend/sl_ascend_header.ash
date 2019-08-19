@@ -420,6 +420,7 @@ boolean sl_floundryAction(item it);							//Defined in sl_ascend/sl_clan.ash
 boolean sl_haveSourceTerminal();							//Defined in sl_ascend/sl_mr2016.ash
 boolean sl_haveWitchess();									//Defined in sl_ascend/sl_mr2016.ash
 boolean sl_mayoItems();										//Defined in sl_ascend/sl_mr2015.ash
+boolean sl_maximizedConsumeStuff();							//Defined in sl_ascend/sl_cooking.ash
 void sl_process_kmail(string functionname);					//Defined in sl_ascend/sl_zlib.ash
 boolean sl_sourceTerminalEducate(skill first);				//Defined in sl_ascend/sl_mr2016.ash
 boolean sl_sourceTerminalEducate(skill first, skill second);//Defined in sl_ascend/sl_mr2016.ash
@@ -646,6 +647,10 @@ string sl_spoonGetDesiredSign();	// Defined in sl_ascend/sl_mr2019.ash
 void sl_spoonTuneConfirm();	// Defined in sl_ascend/sl_mr2019.ash
 boolean sl_spoonReadyToTuneMoon();	// Defined in sl_ascend/sl_mr2019.ash
 boolean sl_spoonTuneMoon();	// Defined in sl_ascend/sl_mr2019.ash
+boolean sl_beachCombAvailable();	// Defined in sl_ascend/sl_mr2019.ash
+boolean sl_canBeachCombHead(string name);	// Defined in sl_ascend/sl_mr2019.ash
+boolean sl_beachCombHead(string name);	// Defined in sl_ascend/sl_mr2019.ash
+boolean sl_beachUseFreeCombs();	// Defined in sl_ascend/sl_mr2019.ash
 boolean getSpaceJelly();									//Defined in sl_ascend/sl_mr2017.ash
 int horseCost();											//Defined in sl_ascend/sl_mr2017.ash
 string horseNormalize(string horseText); // Defined in sl_ascend/sl_mr2017.ash

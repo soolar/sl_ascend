@@ -2085,7 +2085,7 @@ boolean ovenHandle()
 
 boolean isGhost(monster mon)
 {
-	boolean[monster] ghosts = $monsters[Ancient Ghost, Banshee Librarian, Battlie Knight Ghost, Bettie Barulio, Chalkdust Wraith, Claybender Sorcerer Ghost, Coaltergeist, Cold Ghost, Contemplative Ghost, Dusken Raider Ghost, Ghost, Ghost Actor, Ghost Miner, Ghost of Elizabeth Spookyraven, Hot Ghost, Hustled Spectre, Lovesick Ghost, Marcus Macurgeon, Marvin J. Sunny, Mayor Ghost, Mer-kin Specter, Model Skeleton, Mortimer Strauss, Plaid Ghost, Protector Spectre, Restless Ghost, Sexy Sorority Ghost, Sheet Ghost, Sleaze Ghost, Space Tourist Explorer Ghost, Spooky Ghost, Stench Ghost, The Ghost of Phil Bunion, The Unknown Accordion Thief, The Unknown Disco Bandit, The Unknown Pastamancer, The Unknown Sauceror, The Unknown Seal Clubber, The Unknown Turtle Tamer, Whatsian Commando Ghost, Wonderful Winifred Wongle];
+	boolean[monster] ghosts = $monsters[Ancient Ghost, Angry Ghost, Banshee Librarian, Battlie Knight Ghost, Bettie Barulio, Chalkdust Wraith, Claybender Sorcerer Ghost, Coaltergeist, Cold Ghost, Contemplative Ghost, Dusken Raider Ghost, Ghost, Ghost Actor, Ghost Miner, Ghost of Elizabeth Spookyraven, Hot Ghost, Hustled Spectre, Lovesick Ghost, Marcus Macurgeon, Marvin J. Sunny, Mayor Ghost, Mer-kin Specter, Model Skeleton, Mortimer Strauss, Plaid Ghost, Protector Spectre, Restless Ghost, Sexy Sorority Ghost, Sheet Ghost, Sleaze Ghost, Space Tourist Explorer Ghost, Spooky Ghost, Stench Ghost, The Ghost of Phil Bunion, The Unknown Accordion Thief, The Unknown Disco Bandit, The Unknown Pastamancer, The Unknown Sauceror, The Unknown Seal Clubber, The Unknown Turtle Tamer, Whatsian Commando Ghost, Wonderful Winifred Wongle];
 	if((ghosts contains mon) && !mon.boss)
 	{
 		return true;
@@ -2462,28 +2462,27 @@ boolean instakillable(monster mon)
 		return false;
 	}
 
-	boolean[monster] timeSpinner = $monsters[Ancient Skeleton with Skin still on it, Apathetic Tyrannosaurus, Assembly Elemental, Cro-Magnon Gnoll, Krakrox the Barbarian, Wooly Duck];
+	static boolean[monster] not_instakillable = $monsters[
+		// Cyrpt bosses
+		conjoined zmombie, gargantulihc, giant skeelton, huge ghuol,
 
-	boolean[monster] lovetunnel = $monsters[LOV Enforcer, LOV Engineer, LOV Equivocator];
+		// time-spinner
+		Ancient Skeleton with Skin still on it, Apathetic Tyrannosaurus, Assembly Elemental, Cro-Magnon Gnoll, Krakrox the Barbarian, Wooly Duck,
 
-	boolean[monster] protectorspirits = $monsters[ancient protector spirit, ancient protector spirit (The Hidden Apartment Building), ancient protector spirit (The Hidden Hospital), ancient protector spirit (The Hidden Office Building), ancient protector spirit (The Hidden Bowling Alley)];
+		// Love Tunnel
+		LOV Enforcer, LOV Engineer, LOV Equivocator,
 
-	if($monster[Sssshhsssblllrrggghsssssggggrrgglsssshhssslblgl] == mon)
-	{
-		return false;
-	}
+		// ancient protector spirits
+		ancient protector spirit, ancient protector spirit (The Hidden Apartment Building), ancient protector spirit (The Hidden Hospital), ancient protector spirit (The Hidden Office Building), ancient protector spirit (The Hidden Bowling Alley),
 
-	if(timeSpinner contains mon)
-	{
-		return false;
-	}
+		// Voting monsters
+		slime blob, terrible mutant, government bureaucrat, angry ghost, annoyed snake,
 
-	if(lovetunnel contains mon)
-	{
-		return false;
-	}
+		// Tentacles
+		Sssshhsssblllrrggghsssssggggrrgglsssshhssslblgl, Eldritch Tentacle
+	];
 
-	if(protectorspirits contains mon)
+	if(not_instakillable contains mon)
 	{
 		return false;
 	}
@@ -3265,8 +3264,6 @@ boolean handleSealElement(element flavor, string option)
 	return slAdvBypass(page, $location[Noob Cave], option);
 }
 
-
-
 int towerKeyCount()
 {
 	return towerKeyCount(true);
@@ -3747,6 +3744,11 @@ boolean pullXWhenHaveY(item it, int howMany, int whenHave)
 				meat = my_meat() - 5000;
 				getFromStorage = false;
 			}
+			if (curPrice >= 30000)
+			{
+				print(it + " is too expensive at " + curPrice + " meat, we're gonna skip buying one in the mall.", "red");
+				break;
+			}
 			if((curPrice <= oldPrice) && (curPrice < 30000) && (meat >= curPrice))
 			{
 				if(getFromStorage)
@@ -3976,22 +3978,45 @@ boolean useCocoon()
 		return true;
 	}
 
+	print("Considering using Cocoon at " + my_hp() + "/" + my_maxhp() + " HP with " + my_mp() + "/" + my_maxmp() + " MP", "blue");
+
 	int mpCost = 0;
 	int casts = 1;
 	skill cocoon = $skill[none];
 	if(have_skill($skill[Cannelloni Cocoon]))
 	{
+		boolean canUseFamiliars = have_familiar($familiar[Mosquito]);
+		skill blood_skill = $skill[none];
+		if(sl_have_skill($skill[Blood Bubble]) && sl_have_skill($skill[Blood Bond]))
+		{
+			if(have_effect($effect[Blood Bubble]) > have_effect($effect[Blood Bond]) && canUseFamiliars)
+			{
+				blood_skill = $skill[Blood Bond];
+			}
+			else
+			{
+				blood_skill = $skill[Blood Bubble];
+			}
+		}
+		else if(sl_have_skill($skill[Blood Bubble]))
+		{
+			blood_skill = $skill[Blood Bubble];
+		}
+		else if(sl_have_skill($skill[Blood Bond]) && canUseFamiliars)
+		{
+			blood_skill = $skill[Blood Bond];
+		}
 		cocoon = $skill[Cannelloni Cocoon];
 		mpCost = mp_cost(cocoon);
 		int hpNeed = ceil((my_maxhp() - my_hp()) / 1000.0);
 		int maxCasts = my_mp() / mpCost;
 		casts = min(hpNeed, maxCasts);
-		if(sl_beta() && sl_have_skill($skill[Blood Bubble]))
+		if(sl_beta() && blood_skill != $skill[none])
 		{
 			int healto = my_hp() + 1000 * casts;
 			int wasted = min(max(healto - my_maxhp(), 0), my_hp() - 1);
-			int bubbles = wasted / 30;
-			use_skill(bubbles, $skill[Blood Bubble]);
+			int blood_casts = wasted / 30;
+			use_skill(blood_casts, blood_skill);
 		}
 	}
 	else if(have_skill($skill[Shake It Off]))
@@ -4723,7 +4748,7 @@ boolean buffMaintain(effect buff, int mp_min, int casts, int turns)
 	case $effect[Go Get \'Em\, Tiger!]:			useItem = $item[Ben-gal&trade; Balm];			break;
 	case $effect[Got Milk]:						useItem = $item[Milk of Magnesium];				break;
 	case $effect[Gothy]:						useItem = $item[Spooky Eyeliner];				break;
-	case $effect[Gr8tness]:						useItem = $item[Potion of Temporary Gr8tness];	break;
+	case $effect[Gr8tness]:						useItem = $item[Potion of Temporary Gr8ness];	break;
 	case $effect[Graham Crackling]:				useItem = $item[Heather Graham Cracker];		break;
 	case $effect[Greasy Peasy]:					useItem = $item[Robot Grease];					break;
 	case $effect[Greedy Resolve]:				useItem = $item[Resolution: Be Wealthier];		break;
@@ -5940,24 +5965,43 @@ int sl_reserveAmount(item it)
 	return 0;
 }
 
-int sl_reserveCraftAmount(item it)
+int sl_reserveCraftAmount(item orig_it)
 {
-	int reserve = 0;
-	foreach ing,amt in get_ingredients(it)
+	// Detect infinite loops
+	boolean [item] its;
+
+	int inner(item it)
 	{
-		int ingReserve = sl_reserveAmount(ing);
-		if(ingReserve == -1)
+		if (its contains it)
 		{
-			return 0;
+			print("Found dependency loop involving " + it + " when trying to craft " + orig_it + ", consider adding to reserve list.", "red");
+			print("Dependencies (in no particular order):", "red");
+			foreach iit in its
+			{
+				print("> " + iit, "red");
+			}
+			return 9999999;
 		}
-		else if(ingReserve == 0)
+		its[it] = true;
+		int reserve = 0;
+		foreach ing,amt in get_ingredients(it)
 		{
-			ingReserve = sl_reserveCraftAmount(ing);
+			int ingReserve = sl_reserveAmount(ing);
+			if(ingReserve == -1)
+			{
+				return 0;
+			}
+			else if(ingReserve == 0)
+			{
+				ingReserve = inner(ing);
+			}
+			if(ingReserve * amt > reserve)
+			{
+				reserve = ingReserve * amt;
+			}
 		}
-		if(ingReserve * amt > reserve)
-		{
-			reserve = ingReserve * amt;
-		}
+		remove its[it];
+		return reserve;
 	}
-	return reserve;
+	return inner(orig_it);
 }

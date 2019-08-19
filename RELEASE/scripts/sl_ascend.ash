@@ -1,6 +1,6 @@
 script "sl_ascend.ash";
 notify soolar the second;
-since r19375; // beach comb
+since r19482; // potion of temporary gr8ness rename
 /***
 	Killing is wrong, and bad. There should be a new, stronger word for killing like badwrong or badong. YES, killing is badong. From this moment, I will stand for the opposite of killing, gnodab.
 
@@ -63,7 +63,6 @@ void initializeSettings()
 	{
 		return;
 	}
-	set_property("sl_doneInitialize", my_ascensions());
 	set_location($location[none]);
 
 	set_property("sl_useCubeling", true);
@@ -264,6 +263,8 @@ void initializeSettings()
 	glover_initializeSettings();
 	bat_initializeSettings();
 	tcrs_initializeSettings();
+
+	set_property("sl_doneInitialize", my_ascensions());
 }
 
 boolean handleFamiliar(string type)
@@ -857,7 +858,7 @@ item[monster] catBurglarHeistDesires()
 	if((oreGoal != $item[none]) && (item_amount(oreGoal) < 3) && get_property("sl_trapper") == "start" && in_hardcore())
 		wannaHeists[$monster[mountain man]] = oreGoal;
 
-	if((item_amount($item[killing jar]) == 0) && ((get_property("gnasirProgress").to_int() & 4) == 4) && in_hardcore())
+	if((item_amount($item[killing jar]) == 0) && ((get_property("gnasirProgress").to_int() & 4) == 0) && in_hardcore())
 		wannaHeists[$monster[banshee librarian]] = $item[killing jar];
 
 	if((my_level() >= 11) && !possessEquipment($item[Mega Gem]) && in_hardcore() && (item_amount($item[wet stew]) == 0) && (item_amount($item[wet stunt nut stew]) == 0))
@@ -2112,6 +2113,8 @@ void initializeDay(int day)
 				temp = visit_url("peevpee.php?place=fight");
 				set_property("sl_breakstone", false);
 			}
+
+			sl_beachCombHead("exp");
 		}
 
 		if((get_property("lastCouncilVisit").to_int() < my_level()) && (sl_my_path() != "Community Service"))
@@ -2419,9 +2422,11 @@ boolean doBedtime()
 	bat_terminateSession();
 
 	equipBaseline();
-	while(LX_freeCombats())
+	while(true)
 	{
+		resetMaximize();
 		handleFamiliar("stat");
+		if(!LX_freeCombats()) break;
 	}
 
 	if((my_class() == $class[Seal Clubber]) && guild_store_available() && isHermitAvailable() && (sl_my_path() != "G-Lover"))
@@ -2557,6 +2562,8 @@ boolean doBedtime()
 		}
 	}
 
+	cli_execute("CombBeach all");
+
 	# This does not check if we still want these buffs
 	if((my_hp() < (0.9 * my_maxhp())) && (get_property("_hotTubSoaks").to_int() < 5))
 	{
@@ -2651,7 +2658,13 @@ boolean doBedtime()
 		use(1, $item[resolution: be more adventurous]);
 	}
 
-	if((my_daycount() <= 2) && (freeCrafts() > 0) && !in_tcrs())
+	// If in TCRS skip using freecrafts but alert user of how many they can manually use.
+	if((in_tcrs()) && (freeCrafts() > 0))
+	{
+		print("In TCRS: Items are variable, skipping End Of Day crafting", "red");
+		print("Consider manually using your "+freeCrafts()+" free crafts", "red");
+	}
+	else if((my_daycount() <= 2) && (freeCrafts() > 0))
 	{
 		// Check for rapid prototyping
 		while((freeCrafts() > 0) && (item_amount($item[Scrumptious Reagent]) > 0) && (item_amount($item[Cranberries]) > 0) && (item_amount($item[Cranberry Cordial]) < 2) && have_skill($skill[Advanced Saucecrafting]))
@@ -2956,6 +2969,8 @@ boolean doBedtime()
 		}
 	}
 
+	sl_beachUseFreeCombs();
+
 	boolean done = (my_inebriety() > inebriety_limit()) || (my_inebriety() == inebriety_limit() && my_familiar() == $familiar[Stooper]);
 	if((my_class() == $class[Gelatinous Noob]) || !can_drink() || out_of_blood)
 	{
@@ -2970,6 +2985,7 @@ boolean doBedtime()
 		if(sl_have_familiar($familiar[Stooper]) && (inebriety_left() == 0) && (my_familiar() != $familiar[Stooper]) && (sl_my_path() != "Pocket Familiars"))
 		{
 			print("You have a Stooper, you can increase liver by 1!", "blue");
+			use_familiar($familiar[Stooper]);
 		}
 		if(sl_have_familiar($familiar[Machine Elf]) && (get_property("_machineTunnelsAdv").to_int() < 5))
 		{
@@ -5262,6 +5278,7 @@ boolean L13_towerNSEntrance()
 				set_property("sl_powerLevelLastLevel", my_level());
 				return true;
 			}
+			council(); // Log council output
 			abort("Some sidequest is not done for some raisin. Some sidequest is missing, or something is missing, or something is not not something. We don't know what to do.");
 		}
 	}
@@ -9433,6 +9450,12 @@ boolean LX_hardcoreFoodFarm()
 		return false;
 	}
 
+	// If we are in TCRS we don't know what food is good, we don't want to waste adv.
+	if(in_tcrs())
+	{
+		return false;
+	}
+
 	int possMeals = item_amount($item[Goat Cheese]);
 	possMeals = possMeals + item_amount($item[Bubblin\' Crude]);
 
@@ -9745,11 +9768,14 @@ boolean LX_steelOrgan()
 	else if(get_property("questM10Azazel") == "finished")
 	{
 		print("Considering Steel Organ consumption.....", "blue");
-		if((item_amount($item[Steel Lasagna]) > 0) && (fullness_left() >= 5))
+		if((item_amount($item[Steel Lasagna]) > 0) && (fullness_left() >= $item[Steel Lasagna].fullness))
 		{
 			eatsilent(1, $item[Steel Lasagna]);
 		}
-		if((item_amount($item[Steel Margarita]) > 0) && ((my_inebriety() <= 5) || (my_inebriety() >= 12)))
+		boolean wontBeOverdrunk = inebriety_left() >= $item[Steel Margarita].inebriety - 5;
+		boolean notOverdrunk = my_inebriety() <= inebriety_limit();
+		boolean notSavingForBilliards = hasSpookyravenLibraryKey() || get_property("lastSecondFloorUnlock").to_int() == my_ascensions();
+		if((item_amount($item[Steel Margarita]) > 0) && wontBeOverdrunk && notOverdrunk && (notSavingForBilliards || my_inebriety() + $item[Steel Margarita].inebriety <= 10 || my_inebriety() >= 12))
 		{
 			slDrink(1, $item[Steel Margarita]);
 		}
@@ -11344,30 +11370,42 @@ boolean LX_handleSpookyravenFirstFloor()
 			int stench = elemental_resist($element[stench]);
 			int mpNeed = 0;
 			int hpNeed = 0;
-			if((hot < 9) && (stench < 9) && have_skill($skill[Astral Shell]) && (have_effect($effect[Astral Shell]) == 0))
+			if(((hot < 9) || (stench < 9)) && have_skill($skill[Astral Shell]) && (have_effect($effect[Astral Shell]) == 0))
 			{
 				hot += 1;
 				stench += 1;
 				mpNeed += mp_cost($skill[Astral Shell]);
 			}
-			if((hot < 9) && (stench < 9) && have_skill($skill[Elemental Saucesphere]) && (have_effect($effect[Elemental Saucesphere]) == 0))
+			if(((hot < 9) || (stench < 9)) && have_skill($skill[Elemental Saucesphere]) && (have_effect($effect[Elemental Saucesphere]) == 0))
 			{
 				hot += 2;
 				stench += 2;
 				mpNeed += mp_cost($skill[Elemental Saucesphere]);
 			}
-			if((hot < 9) && (stench < 9) && sl_have_skill($skill[Spectral Awareness]) && (have_effect($effect[Spectral Awareness]) == 0))
+			if(((hot < 9) || (stench < 9)) && sl_have_skill($skill[Spectral Awareness]) && (have_effect($effect[Spectral Awareness]) == 0))
 			{
 				hot += 2;
 				stench += 2;
 				hpNeed += hp_cost($skill[Spectral Awareness]);
 			}
+			if(hot < 9 && sl_canBeachCombHead("hot"))
+			{
+				hot += 2;
+			}
+			if(stench < 9 && sl_canBeachCombHead("stench"))
+			{
+				stench += 2;
+			}
+
 			if((my_mp() > mpNeed) && (my_hp() > hpNeed) && (hot >= 9) && (stench >= 9))
 			{
 				buffMaintain($effect[Astral Shell], mp_cost($skill[Astral Shell]), 1, 1);
 				buffMaintain($effect[Elemental Saucesphere], mp_cost($skill[Elemental Saucesphere]), 1, 1);
 				buffMaintain($effect[Spectral Awareness], hp_cost($skill[Spectral Awareness]), 1, 1);
+				if(elemental_resist($element[hot]) < 9) sl_beachCombHead("hot");
+				if(elemental_resist($element[stench]) < 9) sl_beachCombHead("stench");
 			}
+
 			if((elemental_resist($element[hot]) >= 9) && (elemental_resist($element[stench]) >= 9))
 			{
 				delayKitchen = false;
@@ -12029,6 +12067,12 @@ boolean L9_aBooPeak()
 		{
 			coldResist = coldResist + 1;
 		}
+		if(sl_canBeachCombHead("cold")) {
+			coldResist = coldResist + 3;
+		}
+		if(sl_canBeachCombHead("cold")) {
+			spookyResist = spookyResist + 3;
+		}
 
 		#Calculate how much boo peak damage does per unit resistance.
 		int estimatedCold = (13+25+50+125+250) * ((100.0 - elemental_resist_value(coldResist)) / 100.0);
@@ -12118,6 +12162,9 @@ boolean L9_aBooPeak()
 			buffMaintain($effect[Balls of Ectoplasm], 0, 1, 1);
 			buffMaintain($effect[Red Door Syndrome], 0, 1, 1);
 			buffMaintain($effect[Well-Oiled], 0, 1, 1);
+
+			sl_beachCombHead("cold");
+			sl_beachCombHead("spooky");
 
 			set_property("choiceAdventure611", "1");
 			if((my_hp() - 50) < totalDamage)
@@ -12987,6 +13034,7 @@ boolean L11_redZeppelin()
 	{
 		slMaximize("sleaze dmg, sleaze spell dmg", 2500, 0, false);
 	}
+	sl_beachCombHead("sleaze");
 	foreach it in $items[lynyrdskin breeches, lynyrdskin cap, lynyrdskin tunic]
 	{
 		if(possessEquipment(it) && sl_can_equip(it) &&
@@ -13584,6 +13632,8 @@ boolean L8_trapperGroar()
 	}
 	if((internalQuestStatus("questL08Trapper") == 2) && (get_property("currentExtremity").to_int() == 3))
 	{
+		// TODO: There are some reports of this breaking in TCRS, when cold-weather
+		// gear is not sufficient to have 5 cold resistance. Use a maximizer statement?
 		if(outfit("eXtreme Cold-Weather Gear"))
 		{
 			string temp = visit_url("place.php?whichplace=mclargehuge&action=cloudypeak");
@@ -13963,6 +14013,7 @@ boolean sl_tavern()
 			}
 		}
 
+
 		if((my_path() != "Actually Ed the Undying") && (monster_level_adjustment() <= 299))
 		{
 			// Maximize ML First by using equipment
@@ -13980,6 +14031,14 @@ boolean sl_tavern()
 
 		//Turn up the MCD
 		sl_change_mcd(11);
+
+    foreach element_type in $strings[Hot, Cold, Stench, Sleaze, Spooky]
+		{
+			if(numeric_modifier(element_type + " Damage") < 20.0)
+			{
+				sl_beachCombHead(element_type);
+			}
+		}
 
 		if(!maximized)
 		{
