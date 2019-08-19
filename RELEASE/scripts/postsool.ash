@@ -743,21 +743,20 @@ void handlePostAdventure()
 		if(doML)
 		{
 			// Catch when we leave Smut Orc, allow for being "side tracked" buy delay burning
-			if((have_effect($effect[Driving Intimidatingly]).to_int() > 0) && (debuffAsdonDelay >= 2))
+			if((have_effect($effect[Driving Intimidatingly]) > 0) && (debuffAsdonDelay >= 2))
 			{
 				print("No Reason to delay Asdon Usage");
 				uneffect($effect[Driving Intimidatingly]);
 				debuffAsdonDelay = 0;
 			}
-			else if((have_effect($effect[Driving Intimidatingly]).to_int() == 0) && (debuffAsdonDelay >= 0))
-			{
-				print("Allowing Asdon to Ride");
-				debuffAsdonDelay = 0;
-			}
-			else
+			else if((have_effect($effect[Driving Intimidatingly]) > 0) && (debuffAsdonDelay < 2)
 			{
 				debuffAsdonDelay += 1;
 				print("Delaying debuffing Asdon");
+			}
+			else
+			{
+				debuffAsdonDelay = 0;
 			}
 				
 			if((monster_level_adjustment() + (2 * my_level())) <= 150)
