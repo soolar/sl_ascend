@@ -547,7 +547,13 @@ generic_t zone_delay(location loc)
 	generic_t retval;
 	int value = 0;
 	switch(loc)
-	{
+	{	
+	case $location[The Arid\, Extra-Dry Desert]:
+		if(get_property("desertExploration").to_int() < 100)
+		{
+			value = 10 - loc.turns_spent;
+		}
+		break;
 	case $location[The Oasis]:
 		if(get_property("desertExploration").to_int() < 100)
 		{
