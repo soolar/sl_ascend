@@ -1,3 +1,15 @@
+# NOTICE THE SECOND
+
+I've decided to re-evaluate my previous decision, which is detailed in the notice below. I have
+decided upon further thinking to attempt to divorce my opinion of the developer(s) from my opinion
+of the game. I missed the community and the game, and especially scripting for the game too much to
+stay away any longer.
+
+However! In my absence, sl\_ascend has been forked [here](https://github.com/Loathing-Associates-Scripting-Society/autoscend)
+under the new name autoscend. I was never terribly fond of the name sl\_ascend anyway, I just chose
+it out of laziness, and several months of updates can be found there, so when I resume contributing
+to automated ascending of KoL, it will be in the form of pull requests to that project.
+
 # NOTICE
 
 sl\_ascend is no longer being maintained as of September 7th 2019.
