@@ -147,6 +147,7 @@ void initializeSettings()
 	set_property("sl_eaten", "");
 	set_property("sl_familiarChoice", $familiar[none]);
 	set_property("sl_fcle", "");
+	set_property("sl_forceTavern", false);
 	set_property("sl_friars", "");
 	set_property("sl_funTracker", "");
 	set_property("sl_getBoningKnife", false);
@@ -6957,7 +6958,14 @@ boolean L11_mauriceSpookyraven()
 			buffMaintain($effect[Sweetbreads Flamb&eacute;], 0, 1, 1);
 		}
 
-		addToMaximize("100ml 82max");
+		// Maximize Asdon usage
+		if(monster_level_adjustment() <= 81)
+		{
+			asdonBuff($effect[Driving Recklessly]);
+		}
+
+		addToMaximize("500ml 82max");
+
 
 		slAdv(1, $location[The Haunted Boiler Room]);
 
@@ -7122,6 +7130,10 @@ boolean L11_unlockEd()
 	if(get_property("sl_tavern") != "finished")
 	{
 		print("Uh oh, didn\'t do the tavern and we are at the pyramid....", "red");
+
+		// Forcing Tavern.
+		set_property("sl_forceTavern", true);
+		if (L3_Tavern()) return true;
 	}
 
 	print("In the pyramid (W:" + item_amount($item[crumbling wooden wheel]) + ") (R:" + item_amount($item[tomb ratchet]) + ") (U:" + get_property("controlRoomUnlock") + ")", "blue");
@@ -12786,7 +12798,6 @@ boolean L9_oilPeak()
 		return false;
 	}
 
-	print("Oil Peak with ML: " + monster_level_adjustment(), "blue");
 
 	if(contains_text(visit_url("place.php?whichplace=highlands"), "fire3.gif"))
 	{
@@ -12808,6 +12819,7 @@ boolean L9_oilPeak()
 				cli_execute("make " + $item[Jar Of Oil]);
 			}
 			set_property("sl_oilpeak", "finished");
+
 			return true;
 		}
 
@@ -12823,6 +12835,22 @@ boolean L9_oilPeak()
 	buffMaintain($effect[Tortious], 0, 1, 1);
 	buffMaintain($effect[Fishy Whiskers], 0, 1, 1);
 	handleFamiliar("initSuggest");
+
+	// Force MCD usage
+	sl_change_mcd(11);
+
+	// Set baseline to force maximizer usage
+	set_property("sl_maximize_baseline", "1000ml 100max");
+
+	// Maximize Asdon usage
+	if(((monster_level_adjustment() >= 75) && (monster_level_adjustment() <= 99)) || ((monster_level_adjustment() >= 25) && (monster_level_adjustment() <= 49)) || (monster_level_adjustment() <= 11))
+	{
+		asdonBuff($effect[Driving Recklessly]);
+	}
+	else
+	{
+		asdonBuff($effect[Driving Wastefully]);
+	}
 
 	if((my_class() == $class[Ed]) && get_property("sl_dickstab").to_boolean())
 	{
@@ -12859,13 +12887,35 @@ boolean L9_oilPeak()
 			}
 		}
 	}
-	addToMaximize("1000ml 100max");
+
+
+	print("Oil Peak with ML: " + monster_level_adjustment(), "blue");
+
 	slAdv(1, $location[Oil Peak]);
-	if(get_property("lastAdventure") == "Unimpressed with Pressure")
+
+	if(get_property("lastEncounter") == "Unimpressed with Pressure")
 	{
 		set_property("oilPeakProgress", 0.0);
+
+		// Reset basline
+		set_property("sl_maximize_baseline", "");
+
+		// Brute Force grouping with tavern (if not done) to maximize tangles while we have a high ML.
+		print("Checking to see if we should do the tavern while we are running high ML.", "green");
+		set_property("sl_forceTavern", true);
+
+		// Remove Driving Wastefully if we had it
+		if (0 < have_effect($effect[Driving Wastefully]))
+		{
+			uneffect($effect[Driving Wastefully]);
+		}
 	}
+
 	handleFamiliar("item");
+
+	// Reset baseline again, just in case
+	set_property("sl_maximize_baseline", "");
+
 	return true;
 }
 
@@ -14120,6 +14170,10 @@ boolean sl_tavern()
 	}
 	print("In the tavern! Layout: " + tavern, "blue");
 	boolean [int] locations = $ints[3, 2, 1, 0, 5, 10, 15, 20, 16, 21];
+
+	// Infrequent compunding issue, reset maximizer
+	resetMaximize();
+
 	boolean maximized = false;
 	foreach loc in locations
 	{
@@ -14182,7 +14236,26 @@ boolean sl_tavern()
 			}
 		}
 
-		foreach element_type in $strings[Hot, Cold, Stench, Sleaze, Spooky]
+
+		if((my_path() != "Actually Ed the Undying") && (monster_level_adjustment() <= 299))
+		{
+			// Maximize ML First by using equipment
+			if(useMaximizeToEquip())
+			{
+				addToMaximize("500ml 150max");
+			}
+
+			// Asdon usage increases Rat King chance by 8.3%
+			if(monster_level_adjustment() <= 299)
+			{
+				asdonBuff($effect[Driving Recklessly]);
+			}
+		}
+
+		//Turn up the MCD
+		sl_change_mcd(11);
+
+    foreach element_type in $strings[Hot, Cold, Stench, Sleaze, Spooky]
 		{
 			if(numeric_modifier(element_type + " Damage") < 20.0)
 			{
@@ -14192,7 +14265,8 @@ boolean sl_tavern()
 
 		if(!maximized)
 		{
-			addToMaximize("200cold damage 20max,200hot damage 20max,200spooky damage 20max,200stench damage 20max,100ml 149max");
+			// Tails are a better time saving investment
+			addToMaximize("80cold damage 20max,80hot damage 20max,80spooky damage 20max,80stench damage 20max,500ml 150max");
 			simMaximize();
 			maximized = true;
 		}
@@ -14289,7 +14363,7 @@ boolean L3_tavern()
 	{
 		return false;
 	}
-	if(my_adventures() < 5)
+	if(my_adventures() < 10)
 	{
 		return false;
 	}
@@ -14329,6 +14403,11 @@ boolean L3_tavern()
 		}
 	}
 	if(my_level() == get_property("sl_powerLevelLastLevel").to_int())
+	{
+		delayTavern = false;
+	}
+
+	if(get_property("sl_forceTavern").to_boolean())
 	{
 		delayTavern = false;
 	}
