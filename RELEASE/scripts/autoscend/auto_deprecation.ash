@@ -313,6 +313,8 @@ boolean settingFixer()
 		auto_log_debug("Automated Ore mining in hardcore is now for everyone!", "red");
 		remove_property("auto_mineForOres");
 	}
-	
+
+	remove_property("auto_noSnakeOil");
+
 	return true;
 }
