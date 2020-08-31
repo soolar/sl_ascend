@@ -1,6 +1,5 @@
 import <autoscend/combat/auto_combat_header.ash>					//header file for combat
 import <autoscend/combat/auto_combat_util.ash>						//combat utilities
-import <autoscend/combat/auto_combat_awol.ash>						//path = avatar of west of loathing
 import <autoscend/combat/auto_combat_community_service.ash>			//path = community service
 import <autoscend/combat/auto_combat_ed.ash>						//path = actually ed the undying
 import <autoscend/combat/auto_combat_ocrs.ash>						//path = one crazy random summer
@@ -60,10 +59,6 @@ string auto_combatHandler(int round, monster enemy, string text)
 	{
 		enemy = ocrs_combat_helper(text);
 		enemy = last_monster();
-	}
-	if(my_path() == "Avatar of West of Loathing")
-	{
-		awol_combat_helper(text);
 	}
 
 	phylum type = monster_phylum(enemy);
@@ -1948,7 +1943,7 @@ string auto_combatHandler(int round, monster enemy, string text)
 	case $class[Cow Puncher]:
 	case $class[Beanslinger]:
 	case $class[Snake Oiler]:
-		if(canUse($skill[Extract Oil]) && (my_hp() > 80) && (my_mp() >= (3 * mp_cost($skill[Extract Oil]))))
+		if(canUse($skill[Extract Oil]) && (my_hp() > 80) && (my_mp() >= (3 * mp_cost($skill[Extract Oil]))) && (get_property("_oilExtracted").to_int() < 100))
 		{
 			if($monsters[Aggressive grass snake, Bacon snake, Batsnake, Black adder, Burning Snake of Fire, Coal snake, Diamondback rattler, Frontwinder, Frozen Solid Snake, King snake, Licorice snake, Mutant rattlesnake, Prince snake, Sewer snake with a sewer snake in it, Snakeleton, The Snake with Like Ten Heads, Tomb asp, Trouser Snake, Whitesnake] contains enemy && (item_amount($item[Snake Oil]) < 4))
 			{

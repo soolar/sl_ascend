@@ -27,8 +27,6 @@ boolean canSurvive(float mult);						//defined in /autoscend/combat/auto_combat_
 string auto_saberTrickMeteorShowerCombatHandler(int round, monster enemy, string text);				//defined in /autoscend/combat/auto_combat_util.ash
 string findBanisher(int round, monster enemy, string text);				//defined in /autoscend/combat/auto_combat_util.ash
 
-void awol_combat_helper(string page);						//defined in /autoscend/combat/auto_combat_awol.ash
-
 string cs_combatNormal(int round, monster enemy, string text);			//defined in /autoscend/combat/auto_combat_community_service.ash
 string cs_combatXO(int round, monster enemy, string text);				//defined in /autoscend/combat/auto_combat_community_service.ash
 string cs_combatYR(int round, monster enemy, string text);				//defined in /autoscend/combat/auto_combat_community_service.ash
