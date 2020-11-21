@@ -1892,6 +1892,15 @@ boolean L12_farm()
 
 boolean L12_clearBattlefield()
 {
+	if(!inAftercore() && (my_inebriety() < inebriety_limit()) && !get_property("_gardenHarvested").to_boolean())
+	{
+		int[item] camp = auto_get_campground();
+		if((camp contains $item[Packet of Thanksgarden Seeds]) && (camp contains $item[Cornucopia]) && (camp[$item[Cornucopia]] > 0) && (internalQuestStatus("questL12War") >= 1))
+		{
+			cli_execute("garden pick");
+		}
+	}
+
 	if(in_koe())
 	{
 		if (internalQuestStatus("questL12HippyFrat") < 2 && get_property("hippiesDefeated").to_int() < 333 && get_property("fratboysDefeated").to_int() < 333 && possessOutfit("Frat Warrior Fatigues", true))

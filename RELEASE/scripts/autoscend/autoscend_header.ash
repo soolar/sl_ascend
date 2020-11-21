@@ -126,6 +126,7 @@ boolean dna_sorceressTest();
 boolean dna_bedtime();
 boolean xiblaxian_makeStuff();
 boolean LX_ornateDowsingRod(boolean doing_desert_now);
+boolean LX_ornateDowsingRod();
 boolean fancyOilPainting();
 int turkeyBooze();
 int amountTurkeyBooze();
@@ -727,6 +728,7 @@ boolean L5_slayTheGoblinKing();
 
 ########################################################################################################
 //Defined in autoscend/quests/level_06.ash
+boolean L6_friarsGetParts_condition_hardcode();
 boolean L6_friarsGetParts();
 boolean L6_dakotaFanning();
 
@@ -884,6 +886,7 @@ boolean L13_towerNSNagamar();
 
 ########################################################################################################
 //Defined in autoscend/quests/level_any.ash
+boolean LX_bitchinMeatcar_condition();
 boolean LX_bitchinMeatcar();
 boolean LX_unlockDesert();
 boolean LX_desertAlternate();
@@ -905,6 +908,7 @@ boolean dependenceDayClovers();
 boolean LX_artistQuest();
 boolean LX_unlockThinknerdWarehouse(boolean spend_resources);
 boolean LX_melvignShirt();
+boolean LX_steelOrgan_condition_slow();
 boolean LX_steelOrgan();
 boolean LX_guildUnlock();
 boolean startArmorySubQuest();
@@ -1276,6 +1280,7 @@ boolean inKnollSign();
 boolean inCanadiaSign();
 boolean inGnomeSign();
 boolean allowSoftblockShen();
+boolean setSoftblockShen();
 boolean instakillable(monster mon);
 boolean stunnable(monster mon);
 int freeCrafts();
