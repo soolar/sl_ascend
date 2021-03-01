@@ -226,6 +226,10 @@ boolean L8_getGoatCheese()
 	{
 		auto_sourceTerminalEducate($skill[Extract], $skill[Duplicate]);
 	}
+	if (canSniff($monster[Dairy Goat], $location[The Goatlet]) && auto_mapTheMonsters())
+	{
+		auto_log_info("Attemping to use Map the Monsters to olfact a Dairy Goat.");
+	}
 	boolean retval = autoAdv($location[The Goatlet]);
 	auto_sourceTerminalEducate($skill[Extract], $skill[Portscan]);
 	return retval;
@@ -608,7 +612,7 @@ boolean L8_trapperGroar()
 	if(provideResistances(resGoal, false) || provideResistances(resGoal, true))
 	{
 		auto_log_info("Time to take out Gargle, sure, Gargle (Groar)", "blue");
-		addToMaximize("2000cold resistance 5max");
+		equipMaximizedGear();
 		return autoAdv($location[Mist-shrouded Peak]);
 	}
 	return false;

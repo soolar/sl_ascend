@@ -2467,6 +2467,7 @@ void resetState() {
 		set_property("_auto_bad100Familiar", false); 		//reset to not bad. target location might set them as bad again
 	}
 
+	set_property("auto_retrocapeSettings", ""); // retrocape config
 	set_property("auto_januaryToteAcquireCalledThisTurn", false); // january tote item switching
 
 	horseDefault(); // horsery tracking
@@ -2607,6 +2608,7 @@ boolean doTasks()
 	oldPeoplePlantStuff();
 	use_barrels();
 	auto_latteRefill();
+	auto_buyCrimboCommerceMallItem();
 	houseUpgrade();
 
 	//This just closets stuff so G-Lover does not mess with us.
@@ -2615,7 +2617,6 @@ boolean doTasks()
 	if(LM_bhy())						return true;
 
 	tophatMaker();
-	xiblaxian_makeStuff();
 	deck_useScheme("");
 	autosellCrap();
 	asdonAutoFeed();
@@ -2739,6 +2740,7 @@ boolean doTasks()
 
 	catBurglarHeist(); // don't return true from this, isn't adventuring.
 
+
 	if (process_tasks()) return true;
 
 	auto_log_info("I should not get here more than once because I pretty much just finished all my in-run stuff. Beep", "blue");
@@ -2813,16 +2815,16 @@ void auto_begin()
 	backupSetting("dontStopForCounters", true);
 	backupSetting("maximizerCombinationLimit", "100000");
 
-	if(get_property("auto_kingLiberation").to_boolean())
-	{
-		backupSetting("kingLiberatedScript", "scripts/autoscend/auto_king.ash");
-	}
-	
+
 	backupSetting("afterAdventureScript", "scripts/autoscend/auto_post_adv.ash");
 	backupSetting("choiceAdventureScript", "scripts/autoscend/auto_choice_adv.ash");
 	backupSetting("betweenBattleScript", "scripts/autoscend/auto_pre_adv.ash");
 	backupSetting("recoveryScript", "");
 	backupSetting("counterScript", "");
+	if (!get_property("auto_disableExcavator").to_boolean())
+	{
+		backupSetting("spadingScript", "excavator.ash");
+	}
 
 	backupSetting("hpAutoRecovery", -0.05);
 	backupSetting("hpAutoRecoveryTarget", -0.05);

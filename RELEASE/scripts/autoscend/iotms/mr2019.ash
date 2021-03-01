@@ -132,9 +132,7 @@ boolean auto_sausageEatEmUp(int maxToEat)
 	{
 		auto_log_info("We're gonna slurp up some sausage, let's make sure we have enough max mp", "blue");
 		cli_execute("checkpoint");
-		backupSetting("logPreferenceChange", "false");
 		maximize("mp,-tie", false);
-		restoreSetting("logPreferenceChange");
 	}
 	// I could optimize this a little more by eating more sausage at once if you have enough max mp...
 	// but meh.
@@ -303,17 +301,8 @@ boolean auto_saberDailyUpgrade(int day)
 	{
 		return auto_saberChoice("res");
 	}
-
-	if(day == 1)
-	{
-		return auto_saberChoice("ml");
-	}
-	else
-	{
-		return auto_saberChoice("res");
-	}
-
-	return false;
+	
+	return auto_saberChoice("fam");
 }
 
 monster auto_saberCurrentMonster()
@@ -506,7 +495,7 @@ boolean auto_spoonReadyToTuneMoon()
 		return false;
 	}
 
-	if(inGnomeSign() && !toGnomad && auto_is_valid($skill[Torso Awaregness]) && !auto_have_skill($skill[Torso Awaregness]))
+	if(inGnomeSign() && !toGnomad && auto_is_valid($skill[Torso Awareness]) && !auto_have_skill($skill[Torso Awareness]))
 	{
 		// we want to know about our torso before swapping away from gnomad signs
 		return false;

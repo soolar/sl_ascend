@@ -130,6 +130,11 @@ boolean auto_pre_adventure()
 		{
 			adjustForReplaceIfPossible(mon);
 		}
+
+		if (auto_wantToSniff(mon, place) && !burningDelay)
+		{
+			adjustForSniffingIfPossible(mon);
+		}
 	}
 
 	if (in_koe() && possessEquipment($item[low-pressure oxygen tank]))
@@ -437,6 +442,7 @@ boolean auto_pre_adventure()
 
 	// EQUIP MAXIMIZED GEAR
 	equipMaximizedGear();
+	auto_handleRetrocape(); // has to be done after equipMaximizedGear otherwise the maximizer reconfigures it
 	cli_execute("checkpoint clear");
 
 	if (isActuallyEd() && is_wearing_outfit("Filthy Hippy Disguise") && place == $location[Hippy Camp]) {

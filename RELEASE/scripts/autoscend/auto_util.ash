@@ -8,9 +8,7 @@ boolean autoMaximize(string req, boolean simulate)
 		tcrs_maximize_with_items(req);
 #		user_confirm("Beep");
 	}
-	backupSetting("logPreferenceChange", "false");
 	boolean didmax = maximize(req, simulate);
-	restoreSetting("logPreferenceChange");
 	return didmax;
 }
 
@@ -22,9 +20,7 @@ boolean autoMaximize(string req, int maxPrice, int priceLevel, boolean simulate)
 		tcrs_maximize_with_items(req);
 #		user_confirm("Beep");
 	}
-	backupSetting("logPreferenceChange", "false");
 	boolean didmax = maximize(req, maxPrice, priceLevel, simulate);
-	restoreSetting("logPreferenceChange");
 	return didmax;
 }
 
@@ -36,9 +32,7 @@ aggregate autoMaximize(string req, int maxPrice, int priceLevel, boolean simulat
 #		user_confirm("Beep");
 		tcrs_maximize_with_items(req);
 	}
-	backupSetting("logPreferenceChange", "false");
 	aggregate maxrecord = maximize(req, maxPrice, priceLevel, simulate, includeEquip);
-	restoreSetting("logPreferenceChange");
 	return maxrecord;
 }
 
@@ -256,19 +250,6 @@ void debugMaximize(string req, int meat)	//This function will be removed.
 	print_html(tableDo);
 	print_html(tableDont);
 
-	if(get_property("auto_shareMaximizer").to_boolean() && get_property("auto_allowSharingData").to_boolean())
-	{
-		auto_log_info("Sharing Maximizer data.", "blue");
-		string temp = visit_url("http://cheesellc.com/kol/sharing.php?type=maximizer&data="+url_encode(tableDo + tableDont));
-		if(contains_text(temp, "success"))
-		{
-			auto_log_info("Data shared successfully", "green");
-		}
-		else
-		{
-			auto_log_warning("Data share failed", "green");
-		}
-	}
 
 	//	A successive print will help make the table readable in cases where it is not rendered properly
 	//cli_execute("ashref get_inventory");
@@ -347,7 +328,7 @@ boolean organsFull()
 boolean backupSetting(string setting, string newValue)
 {
 	string[string,string] defaults;
-	file_to_map("defaults.txt", defaults);
+	file_to_map("data/defaults.txt", defaults);
 
 	int found = 0;
 	string oldValue = "";
@@ -386,7 +367,7 @@ boolean backupSetting(string setting, string newValue)
 boolean restoreAllSettings()
 {
 	string[string,string] defaults;
-	file_to_map("defaults.txt", defaults);
+	file_to_map("data/defaults.txt", defaults);
 
 	boolean retval = false;
 	foreach domain, name, value in defaults
@@ -920,7 +901,7 @@ boolean canYellowRay(monster target)
 	}
 	# Pulled Yellow Taffy	- How do we handle the underwater check?
 	# He-Boulder?			- How do we do this?
-	return yellowRayCombatString(target) != "";
+	return yellowRayCombatString(target, false, $monsters[bearpig topiary animal, elephant (meatcar?) topiary animal, spider (duck?) topiary animal, Knight (Snake)] contains target) != "";
 }
 
 boolean canYellowRay()
@@ -1241,7 +1222,7 @@ boolean adjustForBanishIfPossible(monster enemy, location loc)
 	return false;
 }
 
-string yellowRayCombatString(monster target, boolean inCombat)
+string yellowRayCombatString(monster target, boolean inCombat, boolean noForceDrop)
 {
 	if(have_effect($effect[Everything Looks Yellow]) <= 0)
 	{
@@ -1298,13 +1279,18 @@ string yellowRayCombatString(monster target, boolean inCombat)
 	if((inCombat ? have_equipped($item[Fourth of May cosplay saber]) : possessEquipment($item[Fourth of May cosplay saber])) && (auto_saberChargesAvailable() > 0))
 	{
 		// can't use the force on uncopyable monsters
-		if(target == $monster[none] || target.copyable)
+		if(target == $monster[none] || (target.copyable && !noForceDrop))
 		{
 			return auto_combatSaberYR();
 		}
 	}
 
 	return "";
+}
+
+string yellowRayCombatString(monster target, boolean inCombat)
+{
+	return yellowRayCombatString(target, inCombat, false);
 }
 
 string yellowRayCombatString(monster target)
@@ -1332,12 +1318,7 @@ boolean adjustForYellowRay(string combat_string)
 	}
 	if(combat_string == ("skill " + $skill[Unleash the Devil's Kiss]))
 	{
-		// avoid uselessly reconfiguring the cape
-		if (get_property("retroCapeSuperhero") != "heck" && get_property("retroCapeWashingInstructions") != "kiss")
-		{
-			cli_execute("retrocape mysticality kiss");
-		}
-		return autoEquip($slot[back], $item[unwrapped knock-off retro superhero cape]);
+		auto_configureRetrocape("heck", "kiss");
 	}
 	return true;
 }
@@ -1346,7 +1327,7 @@ boolean adjustForYellowRayIfPossible(monster target)
 {
 	if(canYellowRay(target))
 	{
-		string yr_string = yellowRayCombatString(target);
+		string yr_string = yellowRayCombatString(target, false, $monsters[bearpig topiary animal, elephant (meatcar?) topiary animal, spider (duck?) topiary animal, Knight (Snake)] contains target);
 		auto_log_info("Adjusting to have YR available for " + target + ": " + yr_string, "blue");
 		return adjustForYellowRay(yr_string);
 	}
@@ -1423,6 +1404,52 @@ boolean adjustForReplaceIfPossible()
 	return adjustForReplaceIfPossible($monster[none]);
 }
 
+boolean canSniff(monster enemy, location loc)
+{
+	if (have_skill($skill[Transcendent Olfaction]) &&
+	auto_is_valid($skill[Transcendent Olfaction]) &&
+	get_property("olfactedMonster").to_monster() != enemy &&
+	(have_effect($effect[On The Trail]) == 0 || item_amount($item[soft green echo eyedrop antidote]) > 0))
+	{
+		return auto_wantToSniff(enemy, loc);
+	}
+	return false;
+}
+
+boolean adjustForSniffingIfPossible(monster target)
+{
+	if (have_skill($skill[Transcendent Olfaction]) && auto_is_valid($skill[Transcendent Olfaction]))
+	{
+		if (get_property("olfactedMonster").to_monster() != target &&
+				have_effect($effect[On the trail]) > 0 &&
+				item_amount($item[soft green echo eyedrop antidote]) > 0)
+		{
+			auto_log_info("Uneffecting On the trail to have Transcendent Olfaction available for " + target, "blue");
+			monster old_olfact = get_property("olfactedMonster").to_monster();
+			string output = cli_execute_output("uneffect On the trail");
+			if (output.contains_text("On the Trail removed."))
+			{
+				handleTracker($item[soft green echo eyedrop antidote], old_olfact, "auto_otherstuff");
+				return true;
+			}
+			else
+			{
+				auto_log_info("Failed to Uneffect On the trail for some reason?", "blue");
+			}
+		}
+		if (my_mp() < mp_cost($skill[Transcendent Olfaction]))
+		{
+			acquireMP(mp_cost($skill[Transcendent Olfaction]));
+		}
+	}
+	return false;
+}
+
+boolean adjustForSniffingIfPossible()
+{
+	return adjustForSniffingIfPossible($monster[none]);
+}
+
 string statCard()
 {
 	switch(my_primestat())
@@ -1439,7 +1466,7 @@ string statCard()
 
 boolean hasTorso()
 {
-	return have_skill($skill[Torso Awaregness]) || have_skill($skill[Best Dressed]);
+	return have_skill($skill[Torso Awareness]) || have_skill($skill[Best Dressed]);
 }
 
 boolean isGuildClass()
@@ -4484,6 +4511,33 @@ location solveDelayZone()
 	return burnZone;
 }
 
+boolean allowSoftblockDelay()
+{
+	return get_property("auto_delayLastLevel").to_int() < my_level();
+}
+
+boolean canBurnDelay(location loc)
+{
+	// TODO: Add Digitize (Portscan?) & LOV Enamorang
+	if (!zone_delay(loc)._boolean || !allowSoftblockDelay())
+	{
+		return false;
+	}
+	if (auto_haveKramcoSausageOMatic() && auto_sausageFightsToday() < 9)
+	{
+		return true;
+	}
+	else if (auto_haveVotingBooth() && get_property("_voteFreeFights").to_int() < 3)
+	{
+		return true;
+	}
+	else if (my_daycount() < 2 && (auto_haveVotingBooth() || auto_haveKramcoSausageOMatic()))
+	{
+		return true;
+	}
+	return false;
+}
+
 boolean auto_is_valid(item it)
 {
 	if(!glover_usable(it))
@@ -5678,9 +5732,7 @@ void effectAblativeArmor(boolean passive_dmg_allowed)
 	//but I am labeling them seperate from buffs in case we ever need to split this function.
 	
 	//if you have something that reduces the cost of casting buffs, wear it now.
-	backupSetting("logPreferenceChange", "false");
 	maximize("-mana cost, -tie", false);
-	restoreSetting("logPreferenceChange");
 	
 	//Passive damage
 	if(passive_dmg_allowed)
