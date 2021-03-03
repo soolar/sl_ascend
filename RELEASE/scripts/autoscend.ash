@@ -1787,7 +1787,7 @@ boolean LX_freeCombatsTask_condition()
 boolean LX_freeCombatsTask()
 {
 	auto_log_debug("Only 1 non reserved adv remains for main loop so doing free combats");
-	if(LX_freeCombats()) return true;
+	return LX_freeCombats();
 }
 
 boolean LX_fightTentacle()
@@ -2140,7 +2140,7 @@ boolean LX_craftAcquireItems()
 		run_choice(1);
 	}
 
-	if(knoll_available() && (have_skill($skill[Torso Awaregness]) || have_skill($skill[Best Dressed])) && (item_amount($item[Demon Skin]) > 0) && !possessEquipment($item[Demonskin Jacket]))
+	if(knoll_available() && (have_skill($skill[Torso Awareness]) || have_skill($skill[Best Dressed])) && (item_amount($item[Demon Skin]) > 0) && !possessEquipment($item[Demonskin Jacket]))
 	{
 		//Demonskin Jacket, requires an adventure, knoll available doesn\'t matter here...
 	}
