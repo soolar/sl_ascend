@@ -4516,6 +4516,13 @@ boolean allowSoftblockDelay()
 	return get_property("auto_delayLastLevel").to_int() < my_level();
 }
 
+boolean setSoftblockDelay()
+{
+	auto_log_warning("I was trying to avoid zones that I could burn delay in, but I've run out of stuff to do. Releasing softblock.", "red");
+	set_property("auto_delayLastLevel", my_level());
+	return true;
+}
+
 boolean canBurnDelay(location loc)
 {
 	// TODO: Add Digitize (Portscan?) & LOV Enamorang
