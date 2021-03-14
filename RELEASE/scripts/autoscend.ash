@@ -1,4 +1,4 @@
-since r20494;	//min mafia revision needed to run this script. Last update: Cargo Shorts support complete
+since r20653;	// min mafia revision needed to run this script. Last update: Torso Awaregness -> Torso Awareness
 /***
 	autoscend_header.ash must be first import
 	All non-accessory scripts must be imported here
@@ -184,6 +184,8 @@ void initializeSettings() {
 	remove_property("auto_shenZonesTurnsSpent");
 	remove_property("auto_lastShenTurn");
 	
+	set_property("auto_delayLastLevel", 0);
+
 	set_property("auto_sniffs", "");
 	set_property("auto_waitingArrowAlcove", "50");
 	set_property("auto_wandOfNagamar", true);
@@ -192,7 +194,6 @@ void initializeSettings() {
 	set_property("auto_writingDeskSummon", false);
 	set_property("auto_yellowRays", "");
 	set_property("auto_replaces", "");
-	set_property("auto_consumeKeyLimePies", true);
 	set_property("auto_skipNuns", "false");
 	set_property("auto_skipL12Farm", "false");
 	set_property("auto_L12FarmStage", "0");
@@ -200,6 +201,8 @@ void initializeSettings() {
 	set_property("auto_junkspritesencountered", 0);
 	set_property("auto_openedziggurat", false);
 	remove_property("auto_minedCells");
+	remove_property("auto_shinningStarted");
+	remove_property("auto_boughtCommerceGhostItem");
 	beehiveConsider();
 
 	eudora_initializeSettings();
@@ -639,6 +642,11 @@ int handlePulls(int day)
 			pullXWhenHaveY($item[etched hourglass], 1, 0);
 		}
 
+		if((storage_amount($item[mafia thumb ring]) > 0) && auto_is_valid($item[mafia thumb ring]))
+		{
+			pullXWhenHaveY($item[mafia thumb ring], 1, 0);
+		}
+
 		if((storage_amount($item[can of rain-doh]) > 0) && glover_usable($item[Can Of Rain-Doh]) && (pullXWhenHaveY($item[can of Rain-doh], 1, 0)))
 		{
 			if(item_amount($item[Can of Rain-doh]) > 0)
@@ -763,11 +771,6 @@ int handlePulls(int day)
 		if(auto_have_skill($skill[Summon Smithsness]))
 		{
 			pullXWhenHaveY($item[hand in glove], 1, 0);
-		}
-		else
-		{
-			//pullXWhenHaveY(<smithsWeapon>, 1, 0);
-			//Possibly pull other smiths gear?
 		}
 
 		if((auto_my_path() != "Heavy Rains") && (auto_my_path() != "License to Adventure") && !($classes[Avatar of Boris, Avatar of Jarlsberg, Avatar of Sneaky Pete, Ed] contains my_class()))
@@ -1026,13 +1029,14 @@ void initializeDay(int day)
 		if(get_property("auto_teaChoice") != "")
 		{
 			string[int] teaChoice = split_string(get_property("auto_teaChoice"), ";");
-			item myTea = trim(teaChoice[min(count(teaChoice), my_daycount()) - 1]).to_item();
+			string myTea = trim(teaChoice[min(count(teaChoice), my_daycount()) - 1]);
+			if (myTea.to_item() != $item[none] || myTea == "shake")
 			if(myTea != $item[none])
 			{
 				boolean buff = cli_execute("teatree " + myTea);
 			}
 		}
-		else if(day == 1)
+		else if (day == 1 && auto_is_valid($item[Potted Tea Tree]))
 		{
 			if(fullness_limit() > 0)
 			{
@@ -1047,7 +1051,7 @@ void initializeDay(int day)
 				boolean buff = cli_execute("teatree " + $item[Cuppa Royal Tea]);
 			}
 		}
-		else if(day == 2)
+		else if (day == 2 && auto_is_valid($item[Potted Tea Tree]))
 		{
 			if(inebriety_limit() > 0)
 			{
@@ -1442,7 +1446,7 @@ boolean dailyEvents()
 
 	while(zataraClanmate(""));
 
-	if(item_amount($item[Genie Bottle]) > 0 && auto_is_valid($item[pocket wish]))
+	if (item_amount($item[Genie Bottle]) > 0 && auto_is_valid($item[pocket wish]) && auto_my_path() != "G-Lover")
 	{
 		for(int i=get_property("_genieWishesUsed").to_int(); i<3; i++)
 		{
@@ -2821,8 +2825,6 @@ void auto_begin()
 	backupSetting("autoAntidote", 0);
 	backupSetting("dontStopForCounters", true);
 	backupSetting("maximizerCombinationLimit", "100000");
-
-
 	backupSetting("afterAdventureScript", "scripts/autoscend/auto_post_adv.ash");
 	backupSetting("choiceAdventureScript", "scripts/autoscend/auto_choice_adv.ash");
 	backupSetting("betweenBattleScript", "scripts/autoscend/auto_pre_adv.ash");
